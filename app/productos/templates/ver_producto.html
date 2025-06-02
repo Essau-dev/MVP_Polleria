@@ -1,0 +1,158 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}{{ title }} - Pollería Montiel{% endblock %} {# Añadimos el nombre del sitio al título #}
+
+{% block content %}
+<main> {# Envuelve todo el contenido principal con la etiqueta <main> para aplicar estilos globales #}
+    <div class="container custom-page-content"> {# Usamos .container para el ancho y un nuevo .custom-page-content para espaciado superior #}
+        {# Encabezado de la página con botones #}
+        <div class="header-row"> {# Clase personalizada para la fila del encabezado #}
+            <h1>{{ producto.nombre }} <small class="text-secondary-color">({{ producto.id }})</small></h1> {# Usamos text-secondary-color para el gris #}
+            <div class="form-actions"> {# Usamos form-actions para agrupar los botones #}
+                <a href="{{ url_for('productos.editar_producto', producto_id=producto.id) }}" class="btn btn--warning btn--small">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit-2"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>
+                    Editar Producto
+                </a>
+                <a href="{{ url_for('productos.listar_productos') }}" class="btn btn--secondary btn--small">Volver a la Lista</a>
+            </div>
+        </div>
+        <hr class="custom-hr"> {# Una línea horizontal con estilo personalizado #}
+
+        {# Bloque para mostrar mensajes flash #}
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                {# Usamos nuestras clases personalizadas para mensajes flash #}
+                <div class="message message-{{ category }}">
+                    {{ message }}
+                    <button type="button" class="close-message-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    </button>
+                </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {# Información Básica del Producto (Tarjeta) #}
+        <div class="custom-card"> {# Reemplaza 'card mb-4' #}
+            <div class="card-header">
+                <h4>Información Básica del Producto</h4>
+            </div>
+            <div class="card-body">
+                <dl class="detail-grid"> {# Reemplaza 'row' para dl #}
+                    <dt class="detail-grid-label">Código (ID):</dt> {# Reemplaza 'col-sm-3' #}
+                    <dd class="detail-grid-value">{{ producto.id }}</dd> {# Reemplaza 'col-sm-9' #}
+
+                    <dt class="detail-grid-label">Nombre:</dt>
+                    <dd class="detail-grid-value">{{ producto.nombre }}</dd>
+
+                    <dt class="detail-grid-label">Descripción:</dt>
+                    <dd class="detail-grid-value">{{ producto.descripcion | nl2br if producto.descripcion else '-' }}</dd>
+
+                    <dt class="detail-grid-label">Categoría:</dt>
+                    <dd class="detail-grid-value">{{ producto.categoria }}</dd>
+
+                    <dt class="detail-grid-label">Estado:</dt>
+                    <dd class="detail-grid-value">
+                        {% if producto.activo %}
+                            <span class="badge badge--success">Activo</span> {# Usamos clases de badge para color #}
+                        {% else %}
+                            <span class="badge badge--danger">Inactivo</span> {# Usamos clases de badge para color #}
+                        {% endif %}
+                    </dd>
+                </dl>
+            </div>
+        </div>
+
+        {# Sección de Modificaciones Directas (Tarjeta) #}
+        <div class="custom-card"> {# Reemplaza 'card mb-4' #}
+            <div class="card-header header-row"> {# Usamos header-row para alinear #}
+                <h4>Modificaciones Directas Aplicables</h4>
+                {# <a href="#" class="btn btn--primary btn--small">Gestionar Modificaciones</a> #}
+            </div>
+            <div class="card-body">
+                {% if modificaciones %}
+                    <ul class="custom-list custom-list--flush"> {# Reemplaza list-group, list-group-flush #}
+                        {% for mod in modificaciones %}
+                            <li class="custom-list-item">{{ mod.nombre }} ({{ mod.codigo_modif }})</li> {# Reemplaza list-group-item #}
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="text-secondary-color">Este producto no tiene modificaciones directas definidas.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        {# Sección de Subproductos (Tarjeta) #}
+        <div class="custom-card"> {# Reemplaza 'card mb-4' #}
+            <div class="card-header header-row"> {# Usamos header-row para alinear #}
+                <h4>Subproductos Derivados</h4>
+                {# <a href="#" class="btn btn--primary btn--small">Añadir Subproducto</a> #}
+            </div>
+            <div class="card-body">
+                {% if subproductos %}
+                    <div class="custom-list"> {# Reemplaza list-group #}
+                        {% for sub in subproductos %}
+                            <a href="#" class="custom-list-item custom-list-item--action header-row"> {# Reemplaza list-group-item list-group-item-action d-flex justify-content-between align-items-center #}
+                                <div>
+                                    <strong>{{ sub.nombre }}</strong> ({{ sub.codigo_subprod }})
+                                    <small class="text-secondary-color d-block">
+                                        {% if sub.activo %}Activo{% else %}Inactivo{% endif %}
+                                    </small>
+                                </div>
+                                <span class="badge badge--primary">{{ sub.modificaciones_aplicables.count() }} Mods</span> {# Reemplaza bg-primary rounded-pill #}
+                            </a>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-secondary-color">Este producto no tiene subproductos definidos.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        {# Sección de Precios Directos del Producto (Tarjeta) #}
+        <div class="custom-card"> {# Reemplaza 'card' #}
+            <div class="card-header header-row"> {# Usamos header-row para alinear #}
+                <h4>Precios Definidos para "{{ producto.nombre }}"</h4>
+                {# <a href="#" class="btn btn--primary btn--small">Añadir Precio</a> #}
+            </div>
+            <div class="card-body">
+                {% if precios %}
+                    <div class="table-container"> {# Reemplaza table-responsive #}
+                        <table class="custom-table"> {# Reemplaza table table-sm table-hover #}
+                            <thead>
+                                <tr>
+                                    <th>Tipo Cliente</th>
+                                    <th>Precio KG</th>
+                                    <th>Cant. Mín. (kg)</th>
+                                    <th>Promo</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for precio in precios %}
+                                    <tr>
+                                        <td>{{ precio.tipo_cliente }}</td>
+                                        <td>${{ "%.2f"|format(precio.precio_kg) }}</td>
+                                        <td>{{ "%.2f"|format(precio.cantidad_minima_kg) if precio.cantidad_minima_kg > 0 else '-' }}</td>
+                                        <td>{{ precio.etiqueta_promo if precio.etiqueta_promo else '-' }}</td>
+                                        <td>
+                                            {% if precio.activo %}
+                                                <span class="badge badge--success">Activo</span>
+                                            {% else %}
+                                                <span class="badge badge--danger">Inactivo</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="text-secondary-color">No hay precios definidos directamente para este producto.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock %}

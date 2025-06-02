@@ -1,0 +1,68 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}Iniciar Sesión - Pollería Montiel{% endblock %}
+
+{% block content %}
+<main class="auth-page"> {# Añadimos una clase para la página de autenticación para posibles estilos específicos #}
+    <div class="login-container"> {# Clase personalizada para el contenedor del formulario de login #}
+        <div class="login-card"> {# Clase personalizada para la "tarjeta" de login #}
+            <div class="card-header"> {# Estilizaremos esta clase en estilo.css #}
+                <h3 class="text-center">Iniciar Sesión</h3> {# Estilizaremos .text-center en estilo.css #}
+            </div>
+            <div class="card-body"> {# Estilizaremos esta clase en estilo.css #}
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            {# Clases genéricas para mensajes flash, estiliza en estilo.css #}
+                            <div class="message message-{{ category }}">
+                                {{ message }}
+                                {# Si necesitas un botón de cerrar, implementa su estilo y JS #}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+
+                <form method="POST" action="{{ url_for('auth.login') }}{% if request.args.get('next') %}?next={{ request.args.get('next') }}{% endif %}" novalidate>
+                    {{ form.hidden_tag() }} {# Token CSRF #}
+
+                    <div class="form-group"> {# Usamos la clase form-group de estilo.css #}
+                        {{ form.username.label(class="form-label") }} {# Usamos la clase form-label de estilo.css #}
+                        {{ form.username(class="form-control" + (" is-invalid" if form.username.errors else "")) }} {# Usamos form-control y is-invalid de estilo.css #}
+                        {% if form.username.errors %}
+                            <div class="invalid-feedback"> {# Usamos invalid-feedback de estilo.css #}
+                                {% for error in form.username.errors %}
+                                    <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group"> {# Usamos la clase form-group de estilo.css #}
+                        {{ form.password.label(class="form-label") }} {# Usamos la clase form-label de estilo.css #}
+                        {{ form.password(class="form-control" + (" is-invalid" if form.password.errors else "")) }} {# Usamos form-control y is-invalid de estilo.css #}
+                        {% if form.password.errors %}
+                            <div class="invalid-feedback"> {# Usamos invalid-feedback de estilo.css #}
+                                {% for error in form.password.errors %}
+                                    <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group form-check"> {# Puedes estilizar form-check en estilo.css #}
+                        {{ form.remember_me(class="form-check-input") }} {# Puedes estilizar form-check-input en estilo.css #}
+                        {{ form.remember_me.label(class="form-check-label") }} {# Puedes estilizar form-check-label en estilo.css #}
+                    </div>
+
+                    <div class="form-group"> {# Usamos form-group para el botón #}
+                        {{ form.submit(class="btn btn--primary btn--block") }} {# Usamos las clases btn y btn--primary, y añadimos btn--block #}
+                    </div>
+                </form>
+            </div>
+            {# <div class="card-footer text-center"> #}
+                {# <small>¿No tienes cuenta? <a href="#">Regístrate aquí</a></small> #}
+            {# </div> #}
+        </div>
+    </div>
+</main>
+{% endblock %}
