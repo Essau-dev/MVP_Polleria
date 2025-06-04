@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Offline - Pollería Montiel</title>
+    <link rel="stylesheet" href="/static/css/estilo.css">
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            text-align: center;
+            background-color: var(--gris-fondo);
+            color: var(--gris-texto-principal);
+        }
+        .offline-message {
+            background-color: var(--gris-elemento);
+            padding: var(--espacio-xl);
+            border-radius: var(--radio-borde-l);
+            box-shadow: var(--sombra-md);
+            max-width: 500px;
+            margin: var(--espacio-xl);
+        }
+        .offline-message h1 {
+            color: var(--rojo);
+            margin-bottom: var(--espacio-m);
+        }
+        .offline-message p {
+            margin-bottom: var(--espacio-l);
+        }
+        .offline-message a {
+            color: var(--verde);
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="offline-message">
+        <h1>¡Estás sin conexión!</h1>
+        <p>Parece que no tienes conexión a internet en este momento.</p>
+        <p>Por favor, verifica tu conexión y vuelve a intentarlo. Algunos contenidos pueden estar disponibles sin conexión si los visitaste antes.</p>
+        <a href="/">Volver a la página de inicio</a>
+    </div>
+</body>
+</html>

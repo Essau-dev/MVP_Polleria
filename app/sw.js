@@ -1,5 +1,5 @@
 // Nombre de la caché. Se recomienda versionar el nombre.
-const CACHE_NAME = 'polleria-mvp-cache-v3'; // Incrementa la versión para forzar la actualización
+const CACHE_NAME = 'polleria-mvp-cache-v4'; // Incrementa la versión para forzar la actualización
 
 // Lista de archivos esenciales que forman el "app shell"
 // Estos archivos se cachearán durante la instalación del Service Worker
@@ -21,7 +21,7 @@ const urlsToCache = [
     'https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment-with-locales.min.js',
     'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap',
     // Si tienes una página offline, añádela aquí:
-    // '/offline.html',
+    '/offline.html', // ¡Añadido para el soporte offline!
 ];
 
 // Evento 'install': Se dispara cuando el Service Worker se instala por primera vez.
@@ -99,7 +99,7 @@ self.addEventListener('fetch', (event) => {
                                 return offlineResponse;
                             }
                             // Si no hay página offline cacheada, devuelve una respuesta de error
-                            return new Response('<h1>Offline</h1><p>No estás conectado y la página no está disponible offline.</p>', {
+                            return new Response('No se pudo cargar la página y no hay versión offline disponible.', {
                                 headers: { 'Content-Type': 'text/html' }
                             });
                         });
