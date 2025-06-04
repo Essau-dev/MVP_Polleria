@@ -4,24 +4,19 @@
 
 {% block content %}
 <main> {# Envuelve tu contenido principal con la etiqueta <main> para aplicar estilos globales #}
-    {# Reemplazamos .container .mt-4 por .page-content #}
-    <div class="page-content">
-        {# Bloque para mostrar mensajes flash (Incluido a través de base.html) #}
-        {# {% include 'shared/_flash_messages.html' %} #} {# Este include ya no es necesario aquí si está en base.html #}
-
+    <div class="page-content"> {# Usamos .page-content para el espaciado y ancho #}
         <div class="custom-card"> {# Usamos la clase custom-card para el contenedor principal #}
             <div class="card-header"> {# Usamos card-header para el título #}
                 {% if current_user.is_authenticated %}
-                    <h3 class="text-center">Bienvenido(a) {{ current_user.nombre_completo }}!</h3>
-                    <h4 class="text">Rol: <strong>{{ current_user.rol }}</h4>
+                    <h3 class="text-center">¡Bienvenido(a) {{ current_user.nombre_completo }}!</h3>
+                    <h4 class="text-center text-secondary-color">Rol: <strong>{{ current_user.rol }}</strong></h4>
                 {% else %}
-                    <h3 class="text-center">Bienvenido(a) a Pollería Montiel!</h3>
-                    
+                    <h3 class="text-center">¡Bienvenido(a) a Pollería Montiel!</h3>
                 {% endif %}
             </div>
             <div class="card-body text-center"> {# Usamos card-body para el contenido y centramos el texto #}
                 {% if current_user.is_authenticated %}
-                    <p style="margin-bottom: var(--espacio-s);"></strong></p>
+                    <p style="margin-bottom: var(--espacio-s);">Aquí puedes gestionar tu panel de control y productos.</p>
                     {# Aplicamos clases de botón a los enlaces #}
                     <div class="form-actions justify-content-center"> {# Usamos .form-actions para agrupar los botones y centramos #}
                         <a href="{{ url_for('dashboard') }}" class="btn btn--primary">Ir al Panel de Control</a>

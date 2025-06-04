@@ -12,99 +12,89 @@
     {# Aquí podrías incluir más enlaces a CSS o scripts necesarios #}
 </head>
 <body>
-    {# Aquí podrías incluir tu barra de navegación o encabezado #}
+    {# Encabezado principal del sitio #}
     <header>
-        <nav class="desktop-nav"> {# Usamos la clase desktop-nav de estilo.css #}
-            <div class="container-nav"> {# Cambio a 'container-nav' para evitar conflictos con el 'container' principal si usas un framework y para dar un estilo más específico a la navegación #}
-                <a class="site-title" href="{{ url_for('index') }}">Pollería Montiel</a> {# Clase personalizada para el título del sitio #}
+        {# Navegación de escritorio (oculta en móvil por defecto) #}
+        <nav class="desktop-nav">
+            <div class="container-nav">
+                <a class="site-title" href="{{ url_for('index') }}">Pollería Montiel</a>
                 <ul>
                     {# Enlaces de navegación principales #}
                     <li><a href="{{ url_for('index') }}" class="{% if request.endpoint == 'index' %}active-link{% endif %}">Inicio</a></li>
                     {% if current_user.is_authenticated %}
-                        <li><a href="{{ url_for('dashboard') }}" class="{% if request.endpoint == 'dashboard' %}active-link{% endif %}">Panel de Control</a></li>
+                        <li><a href="{{ url_for('dashboard') }}" class="{% if request.endpoint == 'dashboard' %}active-link{% endif %}">Panel</a></li>
                         {% if current_user.rol == 'ADMINISTRADOR' %}
-                            <li><a href="{{ url_for('productos.listar_productos') }}" class="{% if request.endpoint == 'productos.listar_productos' %}active-link{% endif %}">Productos</a></li>
-                            {# Agrega aquí más enlaces de administración si los necesitas #}
+                            <li><a href="{{ url_for('productos.listar_productos') }}" class="{% if 'productos' in request.endpoint and 'modificaciones' not in request.endpoint %}active-link{% endif %}">Productos</a></li>
+                            <li><a href="{{ url_for('productos.listar_modificaciones') }}" class="{% if 'modificaciones' in request.endpoint %}active-link{% endif %}">Modificaciones</a></li>
                         {% endif %}
-                        <li>
-                            <span>Hola, {{ current_user.username }}!</span>
-                        </li>
-                        <li>
-                            <a href="{{ url_for('auth.logout') }}" class="btn btn--secondary btn--small">Cerrar Sesión</a> {# Aplicamos clases de botón #}
-                        </li>
+                        <li><a href="{{ url_for('auth.logout') }}" class="btn--small btn--danger">Cerrar Sesión</a></li>
                     {% else %}
-                        <li>
-                            <a href="{{ url_for('auth.login') }}" class="btn btn--primary btn--small">Iniciar Sesión</a> {# Aplicamos clases de botón #}
-                        </li>
+                        <li><a href="{{ url_for('auth.login') }}" class="{% if request.endpoint == 'auth.login' %}active-link{% endif %}">Login</a></li>
                     {% endif %}
                 </ul>
             </div>
-        </nav>
-        {# Navegación móvil (oculta por defecto en escritorio, se muestra en móvil) #}
-        <nav class="icon-nav-mobile">
-            <div class="nav-item {% if request.endpoint == 'index' %}active-link{% endif %}">
-                <a href="{{ url_for('index') }}">
-                    <div class="nav-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-home"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-                    </div>
-                    <div class="nav-label">Inicio</div>
-                </a>
-            </div>
-            {% if current_user.is_authenticated %}
-            <div class="nav-item {% if request.endpoint == 'dashboard' %}active-link{% endif %}">
-                <a href="{{ url_for('dashboard') }}">
-                    <div class="nav-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-grid"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="8" y1="3" x2="8" y2="21"></line><line x1="16" y1="3" x2="16" y2="21"></line><line x1="3" y1="8" x2="21" y2="8"></line><line x1="3" y1="16" x2="21" y2="16"></line></svg>
-                    </div>
-                    <div class="nav-label">Panel</div>
-                </a>
-            </div>
-                {% if current_user.rol == 'ADMINISTRADOR' %}
-                <div class="nav-item {% if request.endpoint == 'productos.listar_productos' %}active-link{% endif %}">
-                    <a href="{{ url_for('productos.listar_productos') }}">
-                        <div class="nav-icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-package"><line x1="16.5" y1="9.4" x2="7.5" y2="4.21"></line><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
-                        </div>
-                        <div class="nav-label">Productos</div>
-                    </a>
-                </div>
-                {% endif %}
-                <div class="nav-item">
-                    <a href="{{ url_for('auth.logout') }}">
-                        <div class="nav-icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-log-out"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="17 16 22 12 17 8"></polyline><line x1="22" y1="12" x2="10" y2="12"></line></svg>
-                        </div>
-                        <div class="nav-label">Salir</div>
-                    </a>
-                </div>
-            {% else %}
-            <div class="nav-item {% if request.endpoint == 'auth.login' %}active-link{% endif %}">
-                <a href="{{ url_for('auth.login') }}">
-                    <div class="nav-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-log-in"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg>
-                    </div>
-                    <div class="nav-label">Login</div>
-                </a>
-            </div>
-            {% endif %}
         </nav>
     </header>
 
     {# Contenedor principal donde se renderizará el contenido de los bloques 'content' #}
     {# Incluimos los mensajes flash aquí para que aparezcan en todas las páginas #}
-    <div class="main-content-wrapper"> {# Un wrapper opcional para el contenido principal #}
+    {# El padding-bottom del body se encarga de la navegación móvil fija #}
+    <div class="main-content-wrapper">
         {% include 'shared/_flash_messages.html' %} {# Incluye el partial de mensajes flash #}
         {% block content %}{% endblock %}
     </div>
+
+    {# Navegación de iconos para móvil (fija en la parte inferior) #}
+    <nav class="icon-nav-mobile">
+        <a href="{{ url_for('index') }}" class="nav-item {% if request.endpoint == 'index' %}active-link{% endif %}">
+            <div class="nav-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-home"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+            </div>
+            <div class="nav-label">Inicio</div>
+        </a>
+        {% if current_user.is_authenticated %}
+            <a href="{{ url_for('dashboard') }}" class="nav-item {% if request.endpoint == 'dashboard' %}active-link{% endif %}">
+                <div class="nav-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-grid"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                </div>
+                <div class="nav-label">Panel</div>
+            </a>
+            {% if current_user.rol == 'ADMINISTRADOR' %}
+                <a href="{{ url_for('productos.listar_productos') }}" class="nav-item {% if 'productos' in request.endpoint and 'modificaciones' not in request.endpoint %}active-link{% endif %}">
+                    <div class="nav-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-package"><line x1="16.5" y1="9.4" x2="7.5" y2="4.21"></line><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                    </div>
+                    <div class="nav-label">Productos</div>
+                </a>
+                <a href="{{ url_for('productos.listar_modificaciones') }}" class="nav-item {% if 'modificaciones' in request.endpoint %}active-link{% endif %}">
+                    <div class="nav-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-sliders"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg>
+                    </div>
+                    <div class="nav-label">Mods</div>
+                </a>
+            {% endif %}
+            <a href="{{ url_for('auth.logout') }}" class="nav-item">
+                <div class="nav-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-log-out"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                </div>
+                <div class="nav-label">Salir</div>
+            </a>
+        {% else %}
+            <a href="{{ url_for('auth.login') }}" class="nav-item {% if request.endpoint == 'auth.login' %}active-link{% endif %}">
+                <div class="nav-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-log-in"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg>
+                </div>
+                <div class="nav-label">Login</div>
+            </a>
+        {% endif %}
+    </nav>
 
     {# Aquí podrías incluir tu pie de página #}
     <footer>
         <p>&copy; {{ moment(current_time).format('YYYY') }} Pollería Montiel MVP. Todos los derechos reservados.</p>
         {# Puedes añadir más información aquí, como enlaces a políticas, etc. #}
     </footer>
-
-    {# Script para cerrar mensajes flash si usas el botón personalizado #}
-    <script src="{{ url_for('static', filename='js/main.js') }}"></script> {# Asegúrate de tener este archivo y script #}
-    {{ moment.include_moment() }} {# Incluye el script de Flask-Moment #}
+    {# Enlace a tu archivo JavaScript principal #}
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
 </html>

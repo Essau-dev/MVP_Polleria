@@ -4,14 +4,9 @@
 
 {% block content %}
 <main> {# Envuelve tu contenido principal con la etiqueta <main> para aplicar estilos globales #}
-    {# Reemplazamos .container .mt-4 por .page-content #}
-    <div class="page-content">
-        {# Bloque para mostrar mensajes flash (Incluido a través de base.html) #}
-        {# {% include 'shared/_flash_messages.html' %} #} {# Este include ya no es necesario aquí si está en base.html #}
-        {# Eliminar el bloque {% if messages %}...{% endwith %} completo que estaba aquí #}
-
+    <div class="page-content"> {# Usamos .page-content para el espaciado y ancho #}
         <h1>Panel de Control</h1>
-        <p>Hola, {{ current_user.nombre_completo }}.</p>
+        <p>Hola, <strong>{{ current_user.nombre_completo }}</strong>.</p>
 
         {# Aquí puedes añadir enlaces o información relevante para el dashboard #}
         <div class="form-actions"> {# Usamos .form-actions para agrupar los botones #}
@@ -19,7 +14,7 @@
             {% if current_user.rol == 'ADMINISTRADOR' %} {# Solo admins ven este enlace por ahora #}
             <a href="{{ url_for('productos.listar_productos') }}" class="btn btn--primary">Gestionar Productos</a> {# Aplicamos clases de botón #}
             {% endif %}
-            <a href="{{ url_for('auth.logout') }}" class="btn btn--danger">Cerrar Sesión</a> {# Aplicamos clases de botón #}
+            <a href="{{ url_for('auth.logout') }}" class="btn btn--danger">Cerrar Sesión</a>
         </div>
     </div>
 </main>

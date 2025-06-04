@@ -4,8 +4,7 @@
 
 {% block content %}
 <main> {# Envuelve tu contenido principal con la etiqueta <main> para aplicar estilos globales #}
-    {# Añadimos .page-content para el espaciado y ancho #}
-    <div class="page-content">
+    <div class="page-content"> {# Añadimos .page-content para el espaciado y ancho #}
         <div class="header-row"> {# Clase personalizada para la fila del encabezado #}
             <h1>{{ title }}</h1>
             <a href="{{ url_for('productos.ver_producto', producto_id=producto_padre.id) }}" class="btn btn--secondary btn--small">
@@ -15,31 +14,23 @@
         <p class="text-secondary-color">Gestionando subproducto para: <strong>{{ producto_padre.nombre }} ({{ producto_padre.id }})</strong></p>
         <hr class="custom-hr">
 
-        {# Bloque para mostrar mensajes flash (Incluido a través de base.html) #}
-        {# {% include 'shared/_flash_messages.html' %} #} {# Este include ya no es necesario aquí si está en base.html #}
-        {# Eliminar el bloque {% if messages %}...{% endwith %} completo que estaba aquí #}
-
         <form method="POST" action="" novalidate class="form-container"> {# Clase personalizada para el contenedor del formulario #}
             {{ form.hidden_tag() }} {# Token CSRF #}
 
-            <div class="form-row"> {# Usamos form-row para la disposición en dos columnas en escritorio #}
-                <div class="form-group"> {# Clase personalizada para grupo de formulario #}
-                    {{ form.codigo_subprod.label(class="form-label") }}
-                    {% if es_editar %}
-                        {{ form.codigo_subprod(class="form-control" + (" is-invalid" if form.codigo_subprod.errors else ""), readonly=True, title="El código no se puede modificar una vez creado.") }}
-                    {% else %}
-                        {{ form.codigo_subprod(class="form-control" + (" is-invalid" if form.codigo_subprod.errors else "")) }}
-                    {% endif %}
-                    {% if form.codigo_subprod.errors %}
+            <div class="form-row"> {# Usamos form-row para... #}
+                <div class="form-group">
+                    {{ form.id.label(class="form-label") }}
+                    {{ form.id(class="form-control" + (" is-invalid" if form.id.errors else ""), readonly=es_edicion) }}
+                    {% if form.id.errors %}
                         <div class="invalid-feedback">
-                            {% for error in form.codigo_subprod.errors %}
+                            {% for error in form.id.errors %}
                                 <span>{{ error }}</span>
                             {% endfor %}
                         </div>
                     {% endif %}
                 </div>
 
-                <div class="form-group"> {# Clase personalizada para grupo de formulario #}
+                <div class="form-group">
                     {{ form.nombre.label(class="form-label") }}
                     {{ form.nombre(class="form-control" + (" is-invalid" if form.nombre.errors else "")) }}
                     {% if form.nombre.errors %}

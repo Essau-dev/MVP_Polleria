@@ -4,7 +4,6 @@
 
 {% block content %}
 <main> {# Envuelve todo el contenido principal con la etiqueta <main> para aplicar estilos globales #}
-    {# Reemplazamos .container .custom-page-content por .page-content #}
     <div class="page-content"> {# Usamos .page-content para el ancho y espaciado #}
         {# Encabezado de la página con botones #}
         <div class="header-row"> {# Clase personalizada para la fila del encabezado #}
@@ -19,125 +18,114 @@
         </div>
         <hr class="custom-hr"> {# Una línea horizontal con estilo personalizado #}
 
-        {# Bloque para mostrar mensajes flash (Incluido a través de base.html) #}
-        {# {% include 'shared/_flash_messages.html' %} #} {# Este include ya no es necesario aquí si está en base.html #}
-
-        {# Información Básica del Producto (Tarjeta) #}
-        <div class="custom-card"> {# Reemplaza 'card mb-4' #}
-            <div class="card-header">
-                <h4>Información Básica del Producto</h4>
-            </div>
+        {# Sección de Detalles del Producto #}
+        <div class="custom-card">
+            <div class="card-header">Detalles Generales</div>
             <div class="card-body">
-                <dl class="detail-grid"> {# Reemplaza 'row' para dl #}
-                    <dt class="detail-grid-label">Código (ID):</dt> {# Reemplaza 'col-sm-3' #}
-                    <dd class="detail-grid-value">{{ producto.id }}</dd> {# Reemplaza 'col-sm-9' #}
+                <dl class="detail-grid">
+                    <dt class="detail-grid-label">ID:</dt>
+                    <dd class="detail-grid-value">{{ producto.id }}</dd>
 
                     <dt class="detail-grid-label">Nombre:</dt>
                     <dd class="detail-grid-value">{{ producto.nombre }}</dd>
 
                     <dt class="detail-grid-label">Descripción:</dt>
-                    <dd class="detail-grid-value">{{ producto.descripcion | nl2br if producto.descripcion else '-' }}</dd>
+                    <dd class="detail-grid-value">{{ producto.descripcion if producto.descripcion else '-' }}</dd>
 
                     <dt class="detail-grid-label">Categoría:</dt>
                     <dd class="detail-grid-value">{{ producto.categoria }}</dd>
 
-                    <dt class="detail-grid-label">Estado:</dt>
+                    <dt class="detail-grid-label">Activo:</dt>
                     <dd class="detail-grid-value">
                         {% if producto.activo %}
-                            <span class="badge badge--success">Activo</span> {# Usamos clases de badge para color #}
+                            <span class="badge badge--success">Sí</span>
                         {% else %}
-                            <span class="badge badge--danger">Inactivo</span> {# Usamos clases de badge para color #}
+                            <span class="badge badge--danger">No</span>
                         {% endif %}
                     </dd>
                 </dl>
             </div>
         </div>
 
-        {# Sección de Modificaciones Directas (Tarjeta) #}
-        <div class="custom-card"> {# Reemplaza 'card mb-4' #}
-            <div class="card-header header-row"> {# Usamos header-row para alinear #}
-                <h4>Modificaciones Directas Aplicables</h4>
-                {# <a href="#" class="btn btn--primary btn--small">Gestionar Modificaciones</a> #}
-            </div>
-            <div class="card-body">
-                {% if modificaciones %}
-                    <ul class="custom-list custom-list--flush"> {# Reemplaza list-group, list-group-flush #}
-                        {% for mod in modificaciones %}
-                            <li class="custom-list-item">{{ mod.nombre }} ({{ mod.codigo_modif }})</li> {# Reemplaza list-group-item #}
-                        {% endfor %}
-                    </ul>
-                {% else %}
-                    <p class="text-secondary-color">Este producto no tiene modificaciones directas definidas.</p>
-                {% endif %}
-            </div>
-        </div>
-
         {# Sección de Subproductos #}
-        <div class="custom-card"> {# Reemplaza 'card mb-4' #}
-            {# Encabezado de la card con el botón "Añadir Subproducto" #}
-            <div class="card-header header-row"> {# Usamos header-row para alinear #}
-                <h4>Subproductos Derivados</h4>
+        <div class="custom-card">
+            <div class="card-header header-row">
+                <h3>Subproductos</h3>
+                {# CORRECCIÓN: Cambiado producto_id a producto_padre_id según el error #}
                 <a href="{{ url_for('productos.crear_subproducto', producto_padre_id=producto.id) }}" class="btn btn--primary btn--small">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-plus-circle"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
-                    Añadir Subproducto
+                    Nuevo Subproducto
                 </a>
             </div>
             <div class="card-body">
                 {% if subproductos %}
-                    <div class="custom-list"> {# Reemplaza list-group #}
+                    <ul class="custom-list">
                         {% for sub in subproductos %}
-                            {# Modificación del bucle para que cada subproducto sea un div con un enlace de edición #}
-                            <div class="custom-list-item header-row"> {# Usamos header-row para alinear contenido y acciones #}
-                                <div>
-                                    <strong>{{ sub.nombre }}</strong> ({{ sub.codigo_subprod }})
-                                    <small class="text-secondary-color d-block">
-                                        {% if sub.activo %}Activo{% else %}Inactivo{% endif %}
-                                    </small>
+                            <li class="custom-list-item custom-list-item--action">
+                                <div class="header-row" style="margin-bottom: 0;">
+                                    <div>
+                                        <strong>{{ sub.nombre }}</strong> <small class="text-secondary-color">({{ sub.id }})</small>
+                                        {% if sub.activo %}
+                                            <span class="badge badge--success">Activo</span>
+                                        {% else %}
+                                            <span class="badge badge--danger">Inactivo</span>
+                                        {% endif %}
+                                    </div>
+                                    <div class="actions-cell">
+                                        <a href="{{ url_for('productos.editar_subproducto', producto_id=producto.id, subproducto_id=sub.id) }}" class="btn btn--warning btn--small" title="Editar Subproducto">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit-2"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>
+                                            Editar
+                                        </a>
+                                        {# Botón Eliminar Subproducto #}
+                                        {# <a href="#" class="btn btn--outline-danger btn--small" title="Eliminar Subproducto">Eliminar</a> #}
+                                    </div>
                                 </div>
-                                <div class="actions-cell"> {# Clase para agrupar acciones #}
-                                    <span class="badge badge--secondary">{{ sub.modificaciones_aplicables.count() }} Mods</span> {# Usamos badge--secondary #}
-                                    <a href="{{ url_for('productos.editar_subproducto', subproducto_id=sub.id) }}" class="btn btn--warning btn--small" title="Editar Subproducto">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit-2"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>
-                                        Editar
-                                    </a>
-                                    {# Aquí podría ir un botón para eliminar subproducto en el futuro #}
-                                </div>
-                            </div>
+                                <p class="text-secondary-color" style="margin-top: var(--espacio-xs); margin-bottom: 0;">{{ sub.descripcion if sub.descripcion else 'Sin descripción.' }}</p>
+                                {% if sub.modificaciones %}
+                                    <p style="margin-top: var(--espacio-s); margin-bottom: var(--espacio-xs); font-weight: 600;">Modificaciones:</p>
+                                    <div class="form-actions" style="justify-content: flex-start; margin-top: 0;">
+                                        {% for mod in sub.modificaciones %}
+                                            <span class="badge badge--secondary">{{ mod.nombre }}</span>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </li>
                         {% endfor %}
-                    </div>
+                    </ul>
                 {% else %}
-                    <p class="text-secondary-color">Este producto no tiene subproductos definidos.</p>
+                    <p class="text-secondary-color">No hay subproductos definidos para este producto. Puedes <a href="{{ url_for('productos.crear_subproducto', producto_padre_id=producto.id) }}">crear uno nuevo</a>.</p>
                 {% endif %}
             </div>
         </div>
 
-        {# Sección de Precios Directos del Producto (Tarjeta) #}
-        <div class="custom-card"> {# Reemplaza 'card' #}
-            <div class="card-header header-row"> {# Usamos header-row para alinear #}
-                <h4>Precios Definidos para "{{ producto.nombre }}"</h4>
-                {# <a href="#" class="btn btn--primary btn--small">Añadir Precio</a> #}
+        {# Sección de Precios #}
+        <div class="custom-card">
+            <div class="card-header header-row">
+                <h3>Precios</h3>
+                {# Botón para añadir precio (si aplica) #}
+                {# <a href="{{ url_for('productos.crear_precio', producto_id=producto.id) }}" class="btn btn--primary btn--small">Nuevo Precio</a> #}
             </div>
             <div class="card-body">
                 {% if precios %}
-                    <div class="table-container"> {# Reemplaza table-responsive #}
-                        <table class="custom-table"> {# Reemplaza table table-sm table-hover #}
+                    <div class="table-container">
+                        <table class="custom-table">
                             <thead>
                                 <tr>
                                     <th>Tipo Cliente</th>
-                                    <th>Precio KG</th>
-                                    <th>Cant. Mín. (kg)</th>
-                                    <th>Promo</th>
-                                    <th>Estado</th>
+                                    <th>Precio/Kg</th>
+                                    <th>Cant. Mínima (Kg)</th>
+                                    <th>Promoción</th>
+                                    <th>Activo</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {% for precio in precios %}
                                     <tr>
-                                        <td>{{ precio.tipo_cliente }}</td>
-                                        <td>${{ "%.2f"|format(precio.precio_kg) }}</td>
-                                        <td>{{ "%.2f"|format(precio.cantidad_minima_kg) if precio.cantidad_minima_kg > 0 else '-' }}</td>
-                                        <td>{{ precio.etiqueta_promo if precio.etiqueta_promo else '-' }}</td>
-                                        <td>
+                                        <td data-label="Tipo Cliente">{{ precio.tipo_cliente }}</td>
+                                        <td data-label="Precio/Kg">${{ "%.2f"|format(precio.precio_kg) }}</td>
+                                        <td data-label="Cant. Mínima (Kg)">{{ "%.2f"|format(precio.cantidad_minima_kg) if precio.cantidad_minima_kg > 0 else '-' }}</td>
+                                        <td data-label="Promoción">{{ precio.etiqueta_promo if precio.etiqueta_promo else '-' }}</td>
+                                        <td data-label="Activo">
                                             {% if precio.activo %}
                                                 <span class="badge badge--success">Activo</span>
                                             {% else %}

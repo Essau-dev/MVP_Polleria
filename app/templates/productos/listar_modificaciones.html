@@ -4,8 +4,7 @@
 
 {% block content %}
 <main> {# Envuelve tu contenido principal con la etiqueta <main> para aplicar estilos globales #}
-    {# Añadimos .page-content para el espaciado y ancho #}
-    <div class="page-content">
+    <div class="page-content"> {# Usamos .page-content para el espaciado y ancho #}
         <div class="header-row"> {# Clase personalizada para la fila del encabezado #}
             <h1>{{ title }}</h1>
             <div class="form-actions"> {# Usamos form-actions para agrupar los botones #}
@@ -13,24 +12,21 @@
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-plus-circle"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
                     Nueva Modificación
                 </a>
-                {# Eliminamos ms-2 #}
                 <a href="{{ url_for('productos.listar_productos') }}" class="btn btn--secondary btn--small">Volver a Productos</a>
             </div>
         </div>
-
-        {# Bloque para mostrar mensajes flash (Incluido a través de base.html) #}
-        {# {% include 'shared/_flash_messages.html' %} #} {# Este include ya no es necesario aquí si está en base.html #}
+        <hr class="custom-hr"> {# Una línea horizontal con estilo personalizado #}
 
         {% if modificaciones %}
-        <div class="table-container"> {# Usamos table-container para la tabla responsive #}
-            <table class="custom-table"> {# Usamos custom-table #}
+        <div class="table-container"> {# Contenedor para hacer la tabla responsiva #}
+            <table class="custom-table"> {# Usamos la clase custom-table #}
                 <thead>
                     <tr>
                         <th>ID</th>
                         <th>Código</th>
                         <th>Nombre</th>
-                        <th>Descripción</th>
-                        <th>Activa</th>
+                        {# <th>Descripción</th> #}
+                        <th>Activo</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
@@ -40,12 +36,12 @@
                         <td data-label="ID">{{ mod.id }}</td>
                         <td data-label="Código">{{ mod.codigo_modif }}</td>
                         <td data-label="Nombre">{{ mod.nombre }}</td>
-                        <td data-label="Descripción">{{ mod.descripcion | truncate(80) if mod.descripcion else '-' }}</td>
-                        <td data-label="Activa">
+                       {# <td data-label="Descripción" class="truncate-text">{{ mod.descripcion }}</td> #}
+                        <td data-label="Activo">
                             {% if mod.activo %}
-                                <span class="badge badge--success">Sí</span> {# Usamos badge--success #}
+                                <span class="badge badge--success">Activo</span>
                             {% else %}
-                                <span class="badge badge--danger">No</span> {# Usamos badge--danger #}
+                                <span class="badge badge--danger">Inactivo</span>
                             {% endif %}
                         </td>
                         <td data-label="Acciones" class="actions-cell">
@@ -67,7 +63,6 @@
             No hay modificaciones para mostrar. Puedes <a href="{{ url_for('productos.crear_modificacion') }}">crear una nueva</a>.
         </div>
         {% endif %}
-        {# Paginación futura aquí #}
     </div>
 </main>
 {% endblock %}

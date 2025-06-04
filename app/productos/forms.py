@@ -6,7 +6,7 @@ from app.models import Modificacion # ¡Asegúrate de importar Modificacion!
 
 # Lista de categorías predefinidas (podría venir de la BD o config en el futuro)
 CATEGORIAS_PRODUCTO = [
-    ('Despiece', 'Producto'),
+    ('Producto', 'Producto'),
     ('Subproducto', 'Subproducto'),
     ('Especial', 'Especial'), # Ejemplo de otra categoría
     ('Corte', 'Corte')

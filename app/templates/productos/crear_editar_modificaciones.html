@@ -4,7 +4,6 @@
 
 {% block content %}
 <main> {# Envuelve tu contenido principal con la etiqueta <main> para aplicar estilos globales #}
-    {# Reemplazamos .container .custom-page-content por .page-content #}
     <div class="page-content"> {# Usamos .page-content para el ancho y espaciado #}
         <div class="header-row"> {# Clase personalizada para la fila del encabezado #}
             <h1>{{ title }}</h1>
@@ -14,36 +13,27 @@
         </div>
         <hr class="custom-hr"> {# Una línea horizontal con estilo personalizado #}
 
-        {# Bloque para mostrar mensajes flash (Incluido a través de base.html) #}
-        {# {% include 'shared/_flash_messages.html' %} #} {# Este include ya no es necesario aquí si está en base.html #}
-
         <div class="custom-card"> {# Reemplaza 'card' #}
             <div class="card-body">
-                <form method="POST">
+                <form method="POST" id="modificacionForm"> {# Añadido ID al formulario #}
                     {{ form.csrf_token }}
 
                     <div class="form-group"> {# Clase personalizada para grupo de formulario #}
-                        {{ form.codigo_modif.label(class="form-label") }} {# Clase personalizada para label #}
-                        {# Usamos form-control y is-invalid de estilo.css #}
-                        {{ form.codigo_modif(class="form-control" + (" is-invalid" if form.codigo_modif.errors else ""), readonly=es_editar) }} {# Clase personalizada para input #}
+                        {{ form.codigo_modif.label(class="form-label") }} {# Usamos form-label #}
+                        {{ form.codigo_modif(class="form-control" + (" is-invalid" if form.codigo_modif.errors else ""), id="modificacionCode") }} {# Añadido ID #}
                         {% if form.codigo_modif.errors %}
-                            {# Reemplazamos text-danger por invalid-feedback #}
                             <div class="invalid-feedback">
                                 {% for error in form.codigo_modif.errors %}
                                     <span>{{ error }}</span>
                                 {% endfor %}
                             </div>
                         {% endif %}
-                        {% if es_editar %}
-                            <small class="form-text text-secondary-color">El código de modificación no se puede cambiar después de la creación.</small> {# Usamos text-secondary-color #}
-                        {% endif %}
                     </div>
 
-                    <div class="form-group">
-                        {{ form.nombre.label(class="form-label") }}
-                        {{ form.nombre(class="form-control" + (" is-invalid" if form.nombre.errors else "")) }}
+                    <div class="form-group"> {# Clase personalizada para grupo de formulario #}
+                        {{ form.nombre.label(class="form-label") }} {# Usamos form-label #}
+                        {{ form.nombre(class="form-control" + (" is-invalid" if form.nombre.errors else ""), id="modificacionName") }} {# Añadido ID #}
                         {% if form.nombre.errors %}
-                            {# Reemplazamos text-danger por invalid-feedback #}
                             <div class="invalid-feedback">
                                 {% for error in form.nombre.errors %}
                                     <span>{{ error }}</span>
@@ -52,9 +42,9 @@
                         {% endif %}
                     </div>
 
-                    <div class="form-group">
-                        {{ form.descripcion.label(class="form-label") }}
-                        {{ form.descripcion(class="form-control" + (" is-invalid" if form.descripcion.errors else "")) }}
+                    <div class="form-group"> {# Clase personalizada para grupo de formulario #}
+                        {{ form.descripcion.label(class="form-label") }} {# Usamos form-label #}
+                        {{ form.descripcion(class="form-control" + (" is-invalid" if form.descripcion.errors else ""), id="modificacionDescription") }} {# Añadido ID #}
                         {% if form.descripcion.errors %}
                             {# Reemplazamos text-danger por invalid-feedback #}
                             <div class="invalid-feedback">
@@ -63,6 +53,20 @@
                                 {% endfor %}
                             </div>
                         {% endif %}
+                        {# Botón para generar descripción con Gemini #}
+                        <button type="button" id="generateModificacionDescriptionBtn" class="btn btn--secondary btn--small mt-3">
+                            ✨ Generar Descripción
+                        </button>
+                        <div id="loadingModificacionIndicator" class="loading-spinner" style="display: none;"></div>
+                    </div>
+
+                    {# Área para la descripción generada #}
+                    <div id="generatedModificacionDescriptionContainer" class="form-group" style="display: none;">
+                        <label for="generatedModificacionDescription" class="form-label">Descripción Generada por IA:</label>
+                        <textarea id="generatedModificacionDescription" class="form-control" rows="5" placeholder="Tu descripción generada aparecerá aquí..."></textarea>
+                        <button type="button" id="applyGeneratedModificacionDescriptionBtn" class="btn btn--info btn--small mt-3">
+                            Aplicar Descripción Generada
+                        </button>
                     </div>
 
                     <div class="form-group form-check"> {# Clase personalizada para checkbox #}
