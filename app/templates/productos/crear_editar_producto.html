@@ -1,0 +1,92 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}{{ title }} - Pollería Montiel{% endblock %}
+
+{% block content %}
+<main> {# Envuelve tu contenido principal con la etiqueta <main> para aplicar estilos globales #}
+    {# Añadimos .page-content para el espaciado y ancho #}
+    <div class="page-content">
+        {# Eliminamos mb-4 de header-row #}
+        <div class="header-row"> {# Clase personalizada para la fila del encabezado #}
+            <h1>{{ title }}</h1>
+        </div>
+
+        {# Bloque para mostrar mensajes flash (Incluido a través de base.html) #}
+        {# {% include 'shared/_flash_messages.html' %} #} {# Este include ya no es necesario aquí si está en base.html #}
+
+        {# El formulario apunta a la misma ruta, Flask se encargará de diferenciar GET/POST #}
+        {# Si es edición, la URL incluirá el ID del producto #}
+        <form method="POST" class="form-container"> {# Clase personalizada para el contenedor del formulario #}
+            {{ form.csrf_token }} {# Campo CSRF oculto #}
+
+            <div class="form-group"> {# Clase personalizada para grupo de formulario #}
+                {{ form.id.label(class="form-label") }} {# Clase personalizada para label #}
+                {# Usamos form-control y is-invalid de estilo.css #}
+                {{ form.id(class="form-control" + (" is-invalid" if form.id.errors else ""), readonly=es_editar) }} {# Clase personalizada para input #}
+                {% if form.id.errors %}
+                    <div class="invalid-feedback"> {# Usamos invalid-feedback de estilo.css #}
+                        {% for error in form.id.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                {% if es_editar %}
+                    <small class="form-text text-secondary-color">El código del producto no se puede cambiar después de la creación.</small> {# Usamos text-secondary-color #}
+                {% endif %}
+            </div>
+
+            <div class="form-group"> {# Clase personalizada para grupo de formulario #}
+                {{ form.nombre.label(class="form-label") }} {# Usamos form-label #}
+                {{ form.nombre(class="form-control" + (" is-invalid" if form.nombre.errors else "")) }} {# Usamos form-control y is-invalid #}
+                {% if form.nombre.errors %}
+                    <div class="invalid-feedback"> {# Usamos invalid-feedback #}
+                        {% for error in form.nombre.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                {{ form.descripcion.label(class="form-label") }}
+                {{ form.descripcion(class="form-control" + (" is-invalid" if form.descripcion.errors else "")) }} {# Usamos form-control, ya que tu CSS lo maneja para textareas #}
+                {% if form.descripcion.errors %}
+                    <div class="invalid-feedback"> {# Usamos invalid-feedback #}
+                        {% for error in form.descripcion.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                {{ form.categoria.label(class="form-label") }}
+                {{ form.categoria(class="form-control" + (" is-invalid" if form.categoria.errors else "")) }} {# Usamos form-control, ya que tu CSS lo maneja para selects #}
+                {% if form.categoria.errors %}
+                    <div class="invalid-feedback"> {# Usamos invalid-feedback #}
+                        {% for error in form.categoria.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="form-group form-check"> {# Usamos form-check para el checkbox #}
+                {{ form.activo(class="form-check-input") }} {# Usamos form-check-input #}
+                {{ form.activo.label(class="form-check-label") }} {# Usamos form-check-label #}
+                {# Los errores de checkbox/radio a menudo se muestran de forma diferente,
+                   pero si WTForms los maneja aquí, usamos invalid-feedback #}
+                {% for error in form.activo.errors %}
+                    <span class="invalid-feedback">{{ error }}</span> {# Usamos invalid-feedback #}
+                {% endfor %}
+            </div>
+
+            <div class="form-actions"> {# Clase personalizada para acciones del formulario #}
+                {{ form.submit(class="btn btn--primary") }} {# Usamos la clase de botón #}
+                {# Enlace para cancelar y volver a la lista #}
+                <a href="{{ url_for('productos.listar_productos') }}" class="btn btn--secondary">Cancelar</a> {# Usamos otra clase de botón #}
+            </div>
+        </form>
+    </div>
+</main>
+{% endblock %}

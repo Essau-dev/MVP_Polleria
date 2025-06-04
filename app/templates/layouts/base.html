@@ -1,13 +1,18 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{% block title %}Pollería Montiel{% endblock %}</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% endblock %} - Pollería Montiel</title>
+    {# Enlace a tu archivo CSS principal #}
     <link rel="stylesheet" href="{{ url_for('static', filename='css/estilo.css') }}">
-    {# Asumo que tu CSS está en 'static/css/estilo.css'. Si está directamente en 'static', usa 'estilo.css' #}
+    <link rel="icon" href="{{ url_for('static', filename='img/logo.png') }}" type="image/png"> {# Icono de la pestaña #}
+    {# Enlace al archivo manifest.json #}
+    <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+    {# Aquí podrías incluir más enlaces a CSS o scripts necesarios #}
 </head>
 <body>
+    {# Aquí podrías incluir tu barra de navegación o encabezado #}
     <header>
         <nav class="desktop-nav"> {# Usamos la clase desktop-nav de estilo.css #}
             <div class="container-nav"> {# Cambio a 'container-nav' para evitar conflictos con el 'container' principal si usas un framework y para dar un estilo más específico a la navegación #}
@@ -85,57 +90,21 @@
         </nav>
     </header>
 
-    <main> {# Eliminamos la clase 'container' aquí para que el estilo de 'main' del CSS se aplique directamente a 'main' #}
+    {# Contenedor principal donde se renderizará el contenido de los bloques 'content' #}
+    {# Incluimos los mensajes flash aquí para que aparezcan en todas las páginas #}
+    <div class="main-content-wrapper"> {# Un wrapper opcional para el contenido principal #}
+        {% include 'shared/_flash_messages.html' %} {# Incluye el partial de mensajes flash #}
         {% block content %}{% endblock %}
-    </main>
+    </div>
 
-    <footer> {# La etiqueta footer en sí misma ya tiene estilos definidos en estilo.css #}
-        <div class="container"> {# Mantén este container si quieres que el texto del footer esté alineado con el contenido principal #}
-            <p>© {{ "now"|date_format("%Y") }} Pollería Montiel. Todos los derechos reservados.</p>
-        </div>
+    {# Aquí podrías incluir tu pie de página #}
+    <footer>
+        <p>&copy; {{ moment(current_time).format('YYYY') }} Pollería Montiel MVP. Todos los derechos reservados.</p>
+        {# Puedes añadir más información aquí, como enlaces a políticas, etc. #}
     </footer>
 
-    {# Si necesitas scripts JS, añádelos aquí o en el bloque scripts #}
-    {% block scripts %}
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // --- Lógica para la navegación móvil ---
-            const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
-            const mobileNavItems = document.getElementById('mobile-nav-items');
-
-            if (mobileMenuToggle && mobileNavItems) {
-                mobileMenuToggle.addEventListener('click', function() {
-                    mobileNavItems.classList.toggle('is-open');
-                    mobileMenuToggle.classList.toggle('is-active'); // Para cambiar el icono si es necesario
-                });
-            }
-
-            // --- Lógica para cerrar mensajes flash ---
-            const closeMessageButtons = document.querySelectorAll('.close-message-btn');
-            closeMessageButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    this.closest('.message').style.display = 'none'; // Oculta el div padre del mensaje
-                    // Opcional: Para una transición suave, podrías usar:
-                    // const messageDiv = this.closest('.message');
-                    // messageDiv.style.opacity = '0';
-                    // messageDiv.addEventListener('transitionend', () => messageDiv.remove()); // Eliminar del DOM después de la transición
-                });
-            });
-
-            // --- Lógica para botones de envío con spinner ---
-            const forms = document.querySelectorAll('form');
-            forms.forEach(form => {
-                form.addEventListener('submit', function() {
-                    const submitButton = this.querySelector('.btn[type="submit"]');
-                    if (submitButton) {
-                        submitButton.disabled = true;
-                        // Asegúrate de que el SVG del spinner esté correctamente definido en tu CSS
-                        submitButton.innerHTML = '<svg class="animate-spin h-5 w-5 mr-3 inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Cargando...';
-                    }
-                });
-            });
-        });
-    </script>
-    {% endblock %}
+    {# Script para cerrar mensajes flash si usas el botón personalizado #}
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script> {# Asegúrate de tener este archivo y script #}
+    {{ moment.include_moment() }} {# Incluye el script de Flask-Moment #}
 </body>
 </html>

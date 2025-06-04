@@ -1,0 +1,16 @@
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <div class="flash-messages-container"> {# Contenedor opcional para espaciado #}
+            {% for category, message in messages %}
+            {# Usamos nuestras clases personalizadas para mensajes flash #}
+            <div class="message message-{{ category }}">
+                {{ message }}
+                {# Botón para cerrar el mensaje, usando la clase definida en base.html #}
+                <button type="button" class="close-message-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endwith %}

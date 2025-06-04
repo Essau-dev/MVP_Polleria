@@ -4,24 +4,16 @@
 
 {% block content %}
 <main> {# Envuelve tu contenido principal con la etiqueta <main> para aplicar estilos globales #}
-    <div class="container mt-4"> {# Puedes mantener esta clase si `container` viene de otro framework o si la defines en tu CSS #}
-        {# Bloque para mostrar mensajes flash #}
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                <div class="message message-{{ category }}">
-                    {{ message }}
-                    <button type="button" class="close-message-btn">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                    </button>
-                </div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
+    {# Reemplazamos .container .mt-4 por .page-content #}
+    <div class="page-content">
+        {# Bloque para mostrar mensajes flash (Incluido a través de base.html) #}
+        {# {% include 'shared/_flash_messages.html' %} #} {# Este include ya no es necesario aquí si está en base.html #}
+        {# Eliminar el bloque {% if messages %}...{% endwith %} completo que estaba aquí #}
 
         <h1>Panel de Control</h1>
-        <p>Hola, {{ current_user.nombre_completo }} ({{ current_user.rol }}). Esta página solo es visible si has iniciado sesión.</p>
-        
+        <p>Hola, {{ current_user.nombre_completo }}.</p>
+
+        {# Aquí puedes añadir enlaces o información relevante para el dashboard #}
         <div class="form-actions"> {# Usamos .form-actions para agrupar los botones #}
             <a href="{{ url_for('index') }}" class="btn btn--secondary">Volver al Inicio</a> {# Aplicamos clases de botón #}
             {% if current_user.rol == 'ADMINISTRADOR' %} {# Solo admins ven este enlace por ahora #}

@@ -113,6 +113,12 @@ header h1 {
     font-size: 0.7em; font-weight: 500;
     letter-spacing: 0.3px; line-height: 1.2;
 }
+.icon-nav-mobile .nav-item:hover,
+.icon-nav-mobile .nav-item:active,
+.icon-nav-mobile .nav-item:focus-visible {
+    background-color: var(--gris-hover-sutil);
+    outline: none;
+}
 .icon-nav-mobile .nav-item:hover .nav-icon svg,
 .icon-nav-mobile .nav-item:hover .nav-label { color: var(--rojo); }
 .icon-nav-mobile .nav-item.active-link .nav-icon svg,
@@ -165,11 +171,21 @@ header h1 {
 
 /* --- Contenido Principal y Footer --- */
 main {
-    padding: var(--espacio-l); margin: var(--espacio-l); background: var(--gris-elemento);
-    box-shadow: var(--sombra-md); border-radius: var(--radio-borde-l);
+    /* Eliminamos padding y margin directo aquí para usar .page-content */
+    /* padding: var(--espacio-l); margin: var(--espacio-l); */
+    background: var(--gris-elemento);
+    box-shadow: var(--sombra-md);
+    border-radius: var(--radio-borde-l);
     max-width: 960px; /* Ancho máximo para el contenido principal */
     margin: var(--espacio-xl) auto; /* Centrar el contenido principal */
 }
+
+/* Nueva clase para el contenido dentro de main */
+.page-content {
+    padding: var(--espacio-l); /* Espaciado interno */
+}
+
+
 footer {
     text-align: center; padding: var(--espacio-xl) var(--espacio-l); background: var(--gris-fondo);
     color: var(--gris-texto-secundario); margin-top: var(--espacio-xl);
@@ -180,7 +196,7 @@ footer {
 .form-group { margin-bottom: var(--espacio-l); position: relative; }
 .form-group label { display: block; margin-bottom: var(--espacio-s); font-weight: 600; color: var(--gris-texto-principal); font-size: 0.95em;}
 .form-group input[type="text"], .form-group input[type="password"], .form-group input[type="number"], .form-group input[type="date"], .form-group input[type="email"], .form-group textarea, .form-group select {
-    width: 100%; padding: 14px var(--espacio-m); border: 1px solid var(--gris-borde-fuerte); border-radius: var(--radio-borde-m); font-size: 1em; font-family: var(--fuente-principal), sans-serif; background-color: var(--blanco); color: var(--gris-texto-principal); transition: border-color var(--transicion-rapida), box-shadow var(--transicion-rapida); appearance: none; -webkit-appearance: none; -moz-appearance: none; }
+    display: block; width: 100%; padding: 14px var(--espacio-m); border: 1px solid var(--gris-borde-fuerte); border-radius: var(--radio-borde-m); font-size: 1em; font-family: var(--fuente-principal), sans-serif; background-color: var(--blanco); color: var(--gris-texto-principal); transition: border-color var(--transicion-rapida), box-shadow var(--transicion-rapida); appearance: none; -webkit-appearance: none; -moz-appearance: none; }
 .form-group select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='none' stroke='%23555' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right var(--espacio-m) center; background-size: 1em; padding-right: calc(var(--espacio-m) * 2.5); }
 .form-group input:focus-visible, .form-group textarea:focus-visible, .form-group select:focus-visible { outline: none; border-color: var(--rojo); box-shadow: 0 0 0 3px var(--rojo-focus-ring); }
 .form-group ::placeholder { color: var(--gris-texto-secundario); opacity: 0.7; }
@@ -406,9 +422,16 @@ footer {
     padding: var(--espacio-s) var(--espacio-m);
     margin-bottom: var(--espacio-m);
     border-radius: var(--borde-redondeado-xs);
-    font-size: 0.9em;
-    border: 1px solid transparent;
+    position: relative; /* Para posicionar el botón de cierre */
+    /* Eliminamos mt-3 de aquí, se añade a .flash-messages-container */
 }
+
+/* Nueva regla para el contenedor de mensajes flash */
+.flash-messages-container {
+    margin-top: var(--espacio-l); /* Añade el margen superior aquí */
+    margin-bottom: var(--espacio-l); /* Espacio debajo del bloque de mensajes */
+}
+
 
 .message-success {
     background-color: #d4edda; /* Verde claro */
@@ -479,70 +502,46 @@ footer {
     border: 1px solid var(--gris-borde); /* Borde para la tabla */
 }
 
-/* --- Estilos para los Badges de Estado (Sí/No) --- */
-.status-badge {
-    display: inline-block;
-    padding: 4px 8px;
-    border-radius: var(--radio-borde-s); /* Bordes redondeados pequeños */
-    font-size: 0.8em;
+/* --- Tablas Personalizadas (custom-table) --- */
+.custom-table {
+    width: 100%;
+    border-collapse: collapse; /* Elimina el espacio entre bordes de celdas */
+    /* Las propiedades de fuente y tamaño de los th/td ya están definidas globalmente */
+}
+
+.custom-table th,
+.custom-table td {
+    border-bottom: 1px solid var(--gris-borde); /* Borde inferior para todas las celdas */
+    padding: var(--espacio-m) var(--espacio-l); /* Ajusta según tus variables */
+    text-align: left;
+}
+
+.custom-table th {
+    background-color: var(--gris-fondo); /* Fondo para los encabezados de la tabla */
     font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.3px;
-    white-space: nowrap; /* Evita que el texto se rompa */
+    color: var(--gris-texto-principal);
 }
 
-.status-active {
-    background-color: rgba(2, 84, 12, 0.1); /* Fondo verde claro con transparencia */
-    color: var(--verde); /* Color de texto verde */
-    border: 1px solid var(--verde); /* Borde verde */
+.custom-table tbody tr:hover { /* Ya deberías tener esta regla global */
+    background-color: var(--gris-hover-sutil);
 }
 
-.status-inactive {
-    background-color: rgba(185, 21, 21, 0.1); /* Fondo rojo claro con transparencia */
-    color: var(--rojo); /* Color de texto rojo */
-    border: 1px solid var(--rojo); /* Borde rojo */
-}
-
-/* --- Media Query Escritorio (Desde 768px) --- */
-@media (min-width: var(--breakpoint-md)) {
-    body { font-size: calc(var(--tamano-fuente-base) + 1px); }
-    header {
-        padding: var(--espacio-l) var(--espacio-xl);
-        text-align: left;
-    }
-    header h1 { font-size: 2.2em; margin-bottom: 0; }
-    .icon-nav-mobile { display: none; }
-    .desktop-nav { display: block; }
-    main { padding: var(--espacio-xl) calc(var(--espacio-xl) * 1.5); max-width: 960px; margin: var(--espacio-xl) auto; }
-    .btn { display: inline-block; width: auto; padding: 14px var(--espacio-l); font-size: 1em; }
-    .form-actions { display: flex; flex-wrap: wrap; gap: var(--espacio-m); margin-top: var(--espacio-l); }
-    .form-actions .btn { margin-bottom: 0; }
-    th, td { font-size: 1em; white-space: normal; padding: var(--espacio-m) var(--espacio-l); }
-    tbody tr:hover { background-color: var(--gris-hover-sutil); }
-    .form-row { display: flex; gap: var(--espacio-l); margin-bottom: var(--espacio-l); }
-    .form-row .form-group { flex: 1; margin-bottom: 0; }
-    .form-group-inline { display: flex; flex-wrap: wrap; align-items: center; gap: var(--espacio-s); margin-bottom: var(--espacio-m); }
-    .form-group-inline label { margin-bottom: 0; flex-basis: 150px; flex-grow: 0; text-align: right; padding-right: var(--espacio-s); }
-    .form-group-inline input, .form-group-inline select, .form-group-inline textarea { flex-grow: 1; width: auto; }
-    .form-group-inline label.checkbox-label { flex-basis: auto; text-align: left; padding-right: var(--espacio-xs); }
-    .form-group-inline input[type="checkbox"] { margin-left: 0; width: auto; flex-grow: 0; }
-}
-
-/* Responsive Table Styles */
+/* --- Estilos para el Contenedor de Tabla Responsivo (Media Query) --- */
+/* Aplicamos los estilos responsivos a .custom-table */
 @media (max-width: 768px) { /* Ajusta el breakpoint según tus necesidades */
-    .table thead {
+    .custom-table thead {
         display: none; /* Oculta los encabezados de la tabla en pantallas pequeñas */
     }
 
-    .table,
-    .table tbody,
-    .table tr,
-    .table td {
+    .custom-table,
+    .custom-table tbody,
+    .custom-table tr,
+    .custom-table td {
         display: block; /* Hace que los elementos de la tabla se comporten como bloques */
         width: 100%; /* Ocupan todo el ancho disponible */
     }
 
-    .table tr {
+    .custom-table tr {
         margin-bottom: var(--espacio-m); /* Añade espacio entre filas apiladas */
         border: 1px solid var(--gris-borde); /* Añade un borde para separar las filas */
         border-radius: var(--radio-borde-m); /* Bordes redondeados */
@@ -551,7 +550,7 @@ footer {
         box-shadow: var(--sombra-xs); /* Sombra sutil */
     }
 
-    .table td {
+    .custom-table td {
         text-align: right; /* Alinea el contenido de la celda a la derecha */
         padding-left: 50%; /* Deja espacio a la izquierda para la etiqueta */
         position: relative; /* Necesario para posicionar el pseudo-elemento */
@@ -560,11 +559,11 @@ footer {
         padding-bottom: var(--espacio-s); /* Espaciado inferior */
     }
 
-    .table td:last-child {
+    .custom-table td:last-child {
         border-bottom: none; /* Elimina el borde inferior de la última celda */
     }
 
-    .table td::before {
+    .custom-table td::before {
         content: attr(data-label); /* Muestra el contenido del atributo data-label */
         position: absolute;
         left: var(--espacio-s); /* Posiciona la etiqueta a la izquierda */
@@ -579,13 +578,13 @@ footer {
     }
 
     /* Ajuste específico para la columna de acciones */
-    .table td[data-label="Acciones"] {
+    .custom-table td[data-label="Acciones"] {
         text-align: center; /* Centra los botones de acciones */
         padding-left: var(--espacio-s); /* Ajusta el padding si no necesitas la etiqueta */
         padding-right: var(--espacio-s); /* Añade padding a la derecha también */
     }
 
-    .table td[data-label="Acciones"]::before {
+    .custom-table td[data-label="Acciones"]::before {
          content: "Acciones"; /* Puedes mostrar la etiqueta "Acciones" si quieres */
          display: block; /* Asegura que el pseudo-elemento se muestre */
          text-align: left; /* Alinea la etiqueta a la izquierda */
@@ -609,12 +608,13 @@ footer {
     }
 }
 
+
 /* --- Clases Generales de Contenido --- */
-.container.custom-page-content {
-    margin-top: var(--espacio-l); /* Añade un margen superior si lo necesitas */
-    margin-bottom: var(--espacio-l); /* Añade un margen inferior */
-    /* El .container general ya define el ancho máximo */
-}
+/* Eliminamos .container.custom-page-content y usamos solo .page-content */
+/* .container.custom-page-content {
+    margin-top: var(--espacio-l);
+    margin-bottom: var(--espacio-l);
+} */
 
 /* --- Encabezados y Texto --- */
 .text-secondary-color {
@@ -641,7 +641,7 @@ footer {
     padding: var(--espacio-m) var(--espacio-l);
     border-bottom: 1px solid var(--gris-borde);
     background-color: var(--gris-fondo); /* Un fondo ligero para el encabezado de la tarjeta */
-    border-top-left-radius: var(--radio-borde-l);
+    border-top-left-radius: var(--radio-borde-l); /* Aplica bordes redondeados solo arriba */
     border-top-right-radius: var(--radio-borde-l);
     font-size: 1.1em; /* Ajusta el tamaño de fuente si es necesario */
     font-weight: 600; /* Semi-bold */
@@ -692,6 +692,10 @@ footer {
     background-color: var(--rojo);
     color: var(--blanco);
 }
+.badge--secondary { /* Para el badge de Mods en subproductos */
+    background-color: var(--gris-medio-claro); /* O un color que prefieras para "secondary" */
+    color: var(--gris-texto-principal);
+}
 .badge--primary { /* Para el badge de Mods en subproductos */
     background-color: var(--amarillo); /* O un color que prefieras para "primary" */
     color: var(--gris-texto-principal); /* O var(--blanco) si el amarillo es oscuro */
@@ -733,30 +737,465 @@ footer {
 }
 
 /* --- Tablas Personalizadas (custom-table) --- */
-.table-container { /* Ya deberías tener este, pero lo reitero por si acaso */
-    overflow-x: auto; /* Para tablas que se desbordan horizontalmente en pantallas pequeñas */
-    margin-bottom: var(--espacio-l); /* Espacio debajo de la tabla */
-}
+/* Eliminamos la regla .table-container y aplicamos a .custom-table */
+/* .table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin-bottom: var(--espacio-xl);
+    background-color: var(--gris-elemento);
+    border-radius: var(--radio-borde-m);
+    box-shadow: var(--sombra-md);
+    border: 1px solid var(--gris-borde);
+} */
 
-.custom-table {
+/* Eliminamos la regla .table y aplicamos a .custom-table */
+/* .table {
     width: 100%;
-    border-collapse: collapse; /* Elimina el espacio entre bordes de celdas */
-    /* Las propiedades de fuente y tamaño de los th/td ya están definidas globalmente */
-}
+    border-collapse: collapse;
+} */
 
-.custom-table th,
-.custom-table td {
-    border-bottom: 1px solid var(--gris-borde); /* Borde inferior para todas las celdas */
-    padding: var(--espacio-m) var(--espacio-l); /* Ajusta según tus variables */
+/* Eliminamos la regla .table th, .table td y aplicamos a .custom-table */
+/* .table th,
+.table td {
+    border-bottom: 1px solid var(--gris-borde);
+    padding: var(--espacio-m) var(--espacio-l);
     text-align: left;
+} */
+
+/* Eliminamos la regla .table th y aplicamos a .custom-table */
+/* .table th {
+    background-color: var(--gris-fondo);
+    font-weight: 600;
+    color: var(--gris-texto-principal);
+} */
+
+/* Eliminamos la regla .table tbody tr:hover y aplicamos a .custom-table */
+/* .table tbody tr:hover {
+    background-color: var(--gris-hover-sutil);
+} */
+
+
+/* --- Media Query Escritorio (Desde 768px) --- */
+@media (min-width: var(--breakpoint-md)) {
+    body { font-size: calc(var(--tamano-fuente-base) + 1px); }
+    header {
+        padding: var(--espacio-l) var(--espacio-xl);
+        text-align: left;
+    }
+    header h1 { font-size: 2.2em; margin-bottom: 0; }
+    .icon-nav-mobile { display: none; }
+    .desktop-nav { display: block; }
+    /* Ajustamos el padding y max-width de main para que .page-content lo maneje */
+    main { padding: 0; max-width: 960px; margin: var(--espacio-xl) auto; }
+    /* Ajustamos el padding de .page-content para escritorio */
+    .page-content {
+        padding: var(--espacio-xl);
+    }
+
+    .btn { display: inline-block; width: auto; padding: 14px var(--espacio-l); font-size: 1em; }
+    .form-actions { display: flex; flex-wrap: wrap; gap: var(--espacio-m); margin-top: var(--espacio-l); }
+    .form-actions .btn { margin-bottom: 0; }
+    /* Eliminamos reglas de th, td y tbody tr:hover para aplicar a .custom-table */
+    /* th, td { font-size: 1em; white-space: normal; padding: var(--espacio-m) var(--espacio-l); } */
+    /* tbody tr:hover { background-color: var(--gris-hover-sutil); } */
+
+    .form-row { display: flex; gap: var(--espacio-l); margin-bottom: var(--espacio-l); }
+    .form-row .form-group { flex: 1; margin-bottom: 0; }
+    .form-group-inline { display: flex; flex-wrap: wrap; align-items: center; gap: var(--espacio-s); margin-bottom: var(--espacio-m); }
+    .form-group-inline label { margin-bottom: 0; flex-basis: 150px; flex-grow: 0; text-align: right; padding-right: var(--espacio-s); }
+    .form-group-inline input, .form-group-inline select, .form-group-inline textarea { flex-grow: 1; width: auto; }
+    .form-group-inline label.checkbox-label { flex-basis: auto; text-align: left; padding-right: var(--espacio-xs); }
+    .form-group-inline input[type="checkbox"] { margin-left: 0; width: auto; flex-grow: 0; }
 }
 
-.custom-table th {
-    background-color: var(--gris-fondo); /* Fondo para los encabezados de la tabla */
-    font-weight: 600;
+/* Responsive Table Styles */
+/* Aplicamos los estilos responsivos a .custom-table */
+@media (max-width: 768px) { /* Ajusta el breakpoint según tus necesidades */
+    /* Eliminamos la regla .table thead y aplicamos a .custom-table */
+    /* .table thead {
+        display: none;
+    } */
+
+    /* Eliminamos la regla .table, .table tbody, .table tr, .table td y aplicamos a .custom-table */
+    /* .table,
+    .table tbody,
+    .table tr,
+    .table td {
+        display: block;
+        width: 100%;
+    } */
+
+    /* Eliminamos la regla .table tr y aplicamos a .custom-table */
+    /* .table tr {
+        margin-bottom: var(--espacio-m);
+        border: 1px solid var(--gris-borde);
+        border-radius: var(--radio-borde-m);
+        padding: var(--espacio-s);
+        background-color: var(--gris-elemento);
+        box-shadow: var(--sombra-xs);
+    } */
+
+    /* Eliminamos la regla .table td y aplicamos a .custom-table */
+    /* .table td {
+        text-align: right;
+        padding-left: 50%;
+        position: relative;
+        border-bottom: 1px solid var(--gris-borde);
+        padding-top: var(--espacio-s);
+        padding-bottom: var(--espacio-s);
+    } */
+
+    /* Eliminamos la regla .table td:last-child y aplicamos a .custom-table */
+    /* .table td:last-child {
+        border-bottom: none;
+    } */
+
+    /* Eliminamos la regla .table td::before y aplicamos a .custom-table */
+    /* .table td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: var(--espacio-s);
+        width: calc(50% - var(--espacio-s) * 2);
+        padding-right: var(--espacio-s);
+        white-space: nowrap;
+        font-weight: var(--peso-fuente-bold);
+        text-align: left;
+        color: var(--gris-texto-principal);
+        top: 50%;
+        transform: translateY(-50%);
+    } */
+
+    /* Ajuste específico para la columna de acciones */
+    /* Eliminamos la regla .table td[data-label="Acciones"] y aplicamos a .custom-table */
+    /* .table td[data-label="Acciones"] {
+        text-align: center;
+        padding-left: var(--espacio-s);
+        padding-right: var(--espacio-s);
+    } */
+
+    /* Eliminamos la regla .table td[data-label="Acciones"]::before y aplicamos a .custom-table */
+    /* .table td[data-label="Acciones"]::before {
+         content: "Acciones";
+         display: block;
+         text-align: left;
+         font-weight: var(--peso-fuente-bold);
+         color: var(--gris-texto-principal);
+         position: absolute;
+         left: var(--espacio-s);
+         width: calc(50% - var(--espacio-s) * 2);
+         padding-right: var(--espacio-s);
+         white-space: nowrap;
+         top: var(--espacio-s);
+         transform: none;
+    } */
+
+    /* Ajuste para el contenedor de botones dentro de las celdas apiladas */
+    /* Eliminamos la regla .actions-cell y la movemos fuera de la media query si es global, o la ajustamos */
+    /* .actions-cell {
+        justify-content: center;
+        gap: var(--espacio-s);
+        flex-wrap: wrap;
+        margin-top: var(--espacio-s);
+    } */
+}
+
+
+/* --- Estilos para el Contenedor de Tabla Responsivo (Media Query) --- */
+/* Movemos la regla .actions-cell fuera de la media query si es global */
+/* .actions-cell {
+    display: flex;
+    gap: var(--espacio-xs);
+    justify-content: flex-start;
+    align-items: center;
+} */
+
+
+/* --- Clases Generales de Contenido --- */
+/* Eliminamos .container.custom-page-content y usamos solo .page-content */
+/* .container.custom-page-content {
+    margin-top: var(--espacio-l);
+    margin-bottom: var(--espacio-l);
+} */
+
+/* --- Encabezados y Texto --- */
+.text-secondary-color {
+    color: var(--gris-texto-secundario);
+    font-weight: normal; /* Asegura que no sea negrita si small/text-muted lo hace por defecto */
+}
+.custom-hr {
+    border: none;
+    border-top: 1px solid var(--gris-borde);
+    margin-top: var(--espacio-l);
+    margin-bottom: var(--espacio-l);
+}
+
+/* --- Tarjetas Personalizadas (custom-card) --- */
+.custom-card {
+    background-color: var(--gris-elemento);
+    border: 1px solid var(--gris-borde);
+    border-radius: var(--radio-borde-l);
+    box-shadow: var(--sombra-xs);
+    margin-bottom: var(--espacio-l); /* Espacio entre tarjetas */
+}
+
+.card-header {
+    padding: var(--espacio-m) var(--espacio-l);
+    border-bottom: 1px solid var(--gris-borde);
+    background-color: var(--gris-fondo); /* Un fondo ligero para el encabezado de la tarjeta */
+    border-top-left-radius: var(--radio-borde-l); /* Aplica bordes redondeados solo arriba */
+    border-top-right-radius: var(--radio-borde-l);
+    font-size: 1.1em; /* Ajusta el tamaño de fuente si es necesario */
+    font-weight: 600; /* Semi-bold */
+}
+
+.card-body {
+    padding: var(--espacio-l);
+}
+
+/* --- Listas de Detalles (dl como grid) --- */
+.detail-grid {
+    display: grid;
+    /* En móviles, una columna */
+    grid-template-columns: 1fr;
+    gap: var(--espacio-s) var(--espacio-m); /* Espacio entre filas y columnas */
+}
+@media (min-width: var(--breakpoint-md)) { /* A partir de escritorio, dos columnas */
+    .detail-grid {
+        grid-template-columns: 0.8fr 2fr; /* Columna de etiqueta y columna de valor */
+    }
+}
+.detail-grid-label {
+    font-weight: 600; /* Etiqueta en negrita */
+    color: var(--gris-texto-principal);
+}
+.detail-grid-value {
     color: var(--gris-texto-principal);
 }
 
-.custom-table tbody tr:hover { /* Ya deberías tener esta regla global */
+/* --- Badges (etiquetas de estado/info) --- */
+.badge {
+    display: inline-block;
+    padding: 0.35em 0.65em;
+    font-size: 0.75em;
+    font-weight: 700;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: var(--borde-redondeado-total); /* Para forma de píldora */
+}
+/* Colores específicos para badges */
+.badge--success {
+    background-color: var(--verde);
+    color: var(--blanco);
+}
+.badge--danger { /* Para inactivo */
+    background-color: var(--rojo);
+    color: var(--blanco);
+}
+.badge--secondary { /* Para el badge de Mods en subproductos */
+    background-color: var(--gris-medio-claro); /* O un color que prefieras para "secondary" */
+    color: var(--gris-texto-principal);
+}
+.badge--primary { /* Para el badge de Mods en subproductos */
+    background-color: var(--amarillo); /* O un color que prefieras para "primary" */
+    color: var(--gris-texto-principal); /* O var(--blanco) si el amarillo es oscuro */
+}
+
+/* --- Listas Personalizadas (custom-list) --- */
+.custom-list {
+    list-style: none; /* Elimina viñetas predeterminadas */
+    padding-left: 0;
+    margin-bottom: 0;
+}
+
+.custom-list-item {
+    position: relative;
+    display: block;
+    padding: var(--espacio-m) var(--espacio-l);
+    background-color: var(--blanco);
+    border: 1px solid var(--gris-borde);
+    margin-bottom: -1px; /* Para que los bordes se "colapsen" */
+}
+.custom-list-item:first-child {
+    border-top-left-radius: var(--radio-borde-l);
+    border-top-right-radius: var(--radio-borde-l);
+}
+.custom-list-item:last-child {
+    border-bottom-left-radius: var(--radio-borde-l);
+    border-bottom-right-radius: var(--radio-borde-l);
+    margin-bottom: 0; /* Elimina el margen del último elemento */
+}
+
+.custom-list-item--action { /* Para elementos de lista que son enlaces */
+    cursor: pointer;
+    text-decoration: none; /* Elimina el subrayado de los enlaces */
+    color: var(--gris-texto-principal); /* Color de texto por defecto */
+    transition: background-color 0.2s ease;
+}
+.custom-list-item--action:hover {
     background-color: var(--gris-hover-sutil);
+}
+
+/* --- Tablas Personalizadas (custom-table) --- */
+/* Eliminamos la regla .table-container y aplicamos a .custom-table */
+/* .table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin-bottom: var(--espacio-xl);
+    background-color: var(--gris-elemento);
+    border-radius: var(--radio-borde-m);
+    box-shadow: var(--sombra-md);
+    border: 1px solid var(--gris-borde);
+} */
+
+/* Eliminamos la regla .table y aplicamos a .custom-table */
+/* .table {
+    width: 100%;
+    border-collapse: collapse;
+} */
+
+/* Eliminamos la regla .table th, .table td y aplicamos a .custom-table */
+/* .table th,
+.table td {
+    border-bottom: 1px solid var(--gris-borde);
+    padding: var(--espacio-m) var(--espacio-l);
+    text-align: left;
+} */
+
+/* Eliminamos la regla .table th y aplicamos a .custom-table */
+/* .table th {
+    background-color: var(--gris-fondo);
+    font-weight: 600;
+    color: var(--gris-texto-principal);
+} */
+
+/* Eliminamos la regla .table tbody tr:hover y aplicamos a .custom-table */
+/* .table tbody tr:hover {
+    background-color: var(--gris-hover-sutil);
+} */
+
+
+/* --- Media Query Escritorio (Desde 768px) --- */
+@media (min-width: var(--breakpoint-md)) {
+    body { font-size: calc(var(--tamano-fuente-base) + 1px); }
+    header {
+        padding: var(--espacio-l) var(--espacio-xl);
+        text-align: left;
+    }
+    header h1 { font-size: 2.2em; margin-bottom: 0; }
+    .icon-nav-mobile { display: none; }
+    .desktop-nav { display: block; }
+    /* Ajustamos el padding y max-width de main para que .page-content lo maneje */
+    main { padding: 0; max-width: 960px; margin: var(--espacio-xl) auto; }
+    /* Ajustamos el padding de .page-content para escritorio */
+    .page-content {
+        padding: var(--espacio-xl);
+    }
+
+    .btn { display: inline-block; width: auto; padding: 14px var(--espacio-l); font-size: 1em; }
+    .form-actions { display: flex; flex-wrap: wrap; gap: var(--espacio-m); margin-top: var(--espacio-l); }
+    .form-actions .btn { margin-bottom: 0; }
+    /* Eliminamos reglas de th, td y tbody tr:hover para aplicar a .custom-table */
+    /* th, td { font-size: 1em; white-space: normal; padding: var(--espacio-m) var(--espacio-l); } */
+    /* tbody tr:hover { background-color: var(--gris-hover-sutil); } */
+
+    .form-row { display: flex; gap: var(--espacio-l); margin-bottom: var(--espacio-l); }
+    .form-row .form-group { flex: 1; margin-bottom: 0; }
+    .form-group-inline { display: flex; flex-wrap: wrap; align-items: center; gap: var(--espacio-s); margin-bottom: var(--espacio-m); }
+    .form-group-inline label { margin-bottom: 0; flex-basis: 150px; flex-grow: 0; text-align: right; padding-right: var(--espacio-s); }
+    .form-group-inline input, .form-group-inline select, .form-group-inline textarea { flex-grow: 1; width: auto; }
+    .form-group-inline label.checkbox-label { flex-basis: auto; text-align: left; padding-right: var(--espacio-xs); }
+    .form-group-inline input[type="checkbox"] { margin-left: 0; width: auto; flex-grow: 0; }
+}
+
+/* Responsive Table Styles */
+/* Aplicamos los estilos responsivos a .custom-table */
+@media (max-width: 768px) { /* Ajusta el breakpoint según tus necesidades */
+    /* Eliminamos la regla .table thead y aplicamos a .custom-table */
+    /* .table thead {
+        display: none;
+    } */
+
+    /* Eliminamos la regla .table, .table tbody, .table tr, .table td y aplicamos a .custom-table */
+    /* .table,
+    .table tbody,
+    .table tr,
+    .table td {
+        display: block;
+        width: 100%;
+    } */
+
+    /* Eliminamos la regla .table tr y aplicamos a .custom-table */
+    /* .table tr {
+        margin-bottom: var(--espacio-m);
+        border: 1px solid var(--gris-borde);
+        border-radius: var(--radio-borde-m);
+        padding: var(--espacio-s);
+        background-color: var(--gris-elemento);
+        box-shadow: var(--sombra-xs);
+    } */
+
+    /* Eliminamos la regla .table td y aplicamos a .custom-table */
+    /* .table td {
+        text-align: right;
+        padding-left: 50%;
+        position: relative;
+        border-bottom: 1px solid var(--gris-borde);
+        padding-top: var(--espacio-s);
+        padding-bottom: var(--espacio-s);
+    } */
+
+    /* Eliminamos la regla .table td:last-child y aplicamos a .custom-table */
+    /* .table td:last-child {
+        border-bottom: none;
+    } */
+
+    /* Eliminamos la regla .table td::before y aplicamos a .custom-table */
+    /* .table td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: var(--espacio-s);
+        width: calc(50% - var(--espacio-s) * 2);
+        padding-right: var(--espacio-s);
+        white-space: nowrap;
+        font-weight: var(--peso-fuente-bold);
+        text-align: left;
+        color: var(--gris-texto-principal);
+        top: 50%;
+        transform: translateY(-50%);
+    } */
+
+    /* Ajuste específico para la columna de acciones */
+    /* Eliminamos la regla .table td[data-label="Acciones"] y aplicamos a .custom-table */
+    /* .table td[data-label="Acciones"] {
+        text-align: center;
+        padding-left: var(--espacio-s);
+        padding-right: var(--espacio-s);
+    } */
+
+    /* Eliminamos la regla .table td[data-label="Acciones"]::before y aplicamos a .custom-table */
+    /* .table td[data-label="Acciones"]::before {
+         content: "Acciones";
+         display: block;
+         text-align: left;
+         font-weight: var(--peso-fuente-bold);
+         color: var(--gris-texto-principal);
+         position: absolute;
+         left: var(--espacio-s);
+         width: calc(50% - var(--espacio-s) * 2);
+         padding-right: var(--espacio-s);
+         white-space: nowrap;
+         top: var(--espacio-s);
+         transform: none;
+    } */
+
+    /* Ajuste para el contenedor de botones dentro de las celdas apiladas */
+    /* Eliminamos la regla .actions-cell y la movemos fuera de la media query si es global, o la ajustamos */
+    /* .actions-cell {
+        justify-content: center;
+        gap: var(--espacio-s);
+        flex-wrap: wrap;
+        margin-top: var(--espacio-s);
+    } */
 }

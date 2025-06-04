@@ -10,17 +10,9 @@
                 <h3 class="text-center">Iniciar Sesión</h3> {# Estilizaremos .text-center en estilo.css #}
             </div>
             <div class="card-body"> {# Estilizaremos esta clase en estilo.css #}
-                {% with messages = get_flashed_messages(with_categories=true) %}
-                    {% if messages %}
-                        {% for category, message in messages %}
-                            {# Clases genéricas para mensajes flash, estiliza en estilo.css #}
-                            <div class="message message-{{ category }}">
-                                {{ message }}
-                                {# Si necesitas un botón de cerrar, implementa su estilo y JS #}
-                            </div>
-                        {% endfor %}
-                    {% endif %}
-                {% endwith %}
+                {# Bloque para mostrar mensajes flash (Incluido a través de base.html) #}
+                {# {% include 'shared/_flash_messages.html' %} #} {# Este include ya no es necesario aquí si está en base.html #}
+                {# Eliminar el bloque {% if messages %}...{% endwith %} completo que estaba aquí #}
 
                 <form method="POST" action="{{ url_for('auth.login') }}{% if request.args.get('next') %}?next={{ request.args.get('next') }}{% endif %}" novalidate>
                     {{ form.hidden_tag() }} {# Token CSRF #}

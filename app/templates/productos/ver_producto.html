@@ -1,10 +1,11 @@
 {% extends "layouts/base.html" %}
 
-{% block title %}{{ title }} - Pollería Montiel{% endblock %} {# Añadimos el nombre del sitio al título #}
+{% block title %}{{ title }} - Pollería Montiel{% endblock %}
 
 {% block content %}
 <main> {# Envuelve todo el contenido principal con la etiqueta <main> para aplicar estilos globales #}
-    <div class="container custom-page-content"> {# Usamos .container para el ancho y un nuevo .custom-page-content para espaciado superior #}
+    {# Reemplazamos .container .custom-page-content por .page-content #}
+    <div class="page-content"> {# Usamos .page-content para el ancho y espaciado #}
         {# Encabezado de la página con botones #}
         <div class="header-row"> {# Clase personalizada para la fila del encabezado #}
             <h1>{{ producto.nombre }} <small class="text-secondary-color">({{ producto.id }})</small></h1> {# Usamos text-secondary-color para el gris #}
@@ -18,20 +19,8 @@
         </div>
         <hr class="custom-hr"> {# Una línea horizontal con estilo personalizado #}
 
-        {# Bloque para mostrar mensajes flash #}
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                {# Usamos nuestras clases personalizadas para mensajes flash #}
-                <div class="message message-{{ category }}">
-                    {{ message }}
-                    <button type="button" class="close-message-btn">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                    </button>
-                </div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
+        {# Bloque para mostrar mensajes flash (Incluido a través de base.html) #}
+        {# {% include 'shared/_flash_messages.html' %} #} {# Este include ya no es necesario aquí si está en base.html #}
 
         {# Información Básica del Producto (Tarjeta) #}
         <div class="custom-card"> {# Reemplaza 'card mb-4' #}
@@ -83,25 +72,37 @@
             </div>
         </div>
 
-        {# Sección de Subproductos (Tarjeta) #}
+        {# Sección de Subproductos #}
         <div class="custom-card"> {# Reemplaza 'card mb-4' #}
+            {# Encabezado de la card con el botón "Añadir Subproducto" #}
             <div class="card-header header-row"> {# Usamos header-row para alinear #}
                 <h4>Subproductos Derivados</h4>
-                {# <a href="#" class="btn btn--primary btn--small">Añadir Subproducto</a> #}
+                <a href="{{ url_for('productos.crear_subproducto', producto_padre_id=producto.id) }}" class="btn btn--primary btn--small">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-plus-circle"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+                    Añadir Subproducto
+                </a>
             </div>
             <div class="card-body">
                 {% if subproductos %}
                     <div class="custom-list"> {# Reemplaza list-group #}
                         {% for sub in subproductos %}
-                            <a href="#" class="custom-list-item custom-list-item--action header-row"> {# Reemplaza list-group-item list-group-item-action d-flex justify-content-between align-items-center #}
+                            {# Modificación del bucle para que cada subproducto sea un div con un enlace de edición #}
+                            <div class="custom-list-item header-row"> {# Usamos header-row para alinear contenido y acciones #}
                                 <div>
                                     <strong>{{ sub.nombre }}</strong> ({{ sub.codigo_subprod }})
                                     <small class="text-secondary-color d-block">
                                         {% if sub.activo %}Activo{% else %}Inactivo{% endif %}
                                     </small>
                                 </div>
-                                <span class="badge badge--primary">{{ sub.modificaciones_aplicables.count() }} Mods</span> {# Reemplaza bg-primary rounded-pill #}
-                            </a>
+                                <div class="actions-cell"> {# Clase para agrupar acciones #}
+                                    <span class="badge badge--secondary">{{ sub.modificaciones_aplicables.count() }} Mods</span> {# Usamos badge--secondary #}
+                                    <a href="{{ url_for('productos.editar_subproducto', subproducto_id=sub.id) }}" class="btn btn--warning btn--small" title="Editar Subproducto">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit-2"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>
+                                        Editar
+                                    </a>
+                                    {# Aquí podría ir un botón para eliminar subproducto en el futuro #}
+                                </div>
+                            </div>
                         {% endfor %}
                     </div>
                 {% else %}

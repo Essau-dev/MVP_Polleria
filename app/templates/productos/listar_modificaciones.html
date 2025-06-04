@@ -1,0 +1,73 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}{{ title }} - Pollería Montiel{% endblock %}
+
+{% block content %}
+<main> {# Envuelve tu contenido principal con la etiqueta <main> para aplicar estilos globales #}
+    {# Añadimos .page-content para el espaciado y ancho #}
+    <div class="page-content">
+        <div class="header-row"> {# Clase personalizada para la fila del encabezado #}
+            <h1>{{ title }}</h1>
+            <div class="form-actions"> {# Usamos form-actions para agrupar los botones #}
+                <a href="{{ url_for('productos.crear_modificacion') }}" class="btn btn--primary btn--small">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-plus-circle"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+                    Nueva Modificación
+                </a>
+                {# Eliminamos ms-2 #}
+                <a href="{{ url_for('productos.listar_productos') }}" class="btn btn--secondary btn--small">Volver a Productos</a>
+            </div>
+        </div>
+
+        {# Bloque para mostrar mensajes flash (Incluido a través de base.html) #}
+        {# {% include 'shared/_flash_messages.html' %} #} {# Este include ya no es necesario aquí si está en base.html #}
+
+        {% if modificaciones %}
+        <div class="table-container"> {# Usamos table-container para la tabla responsive #}
+            <table class="custom-table"> {# Usamos custom-table #}
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Código</th>
+                        <th>Nombre</th>
+                        <th>Descripción</th>
+                        <th>Activa</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for mod in modificaciones %}
+                    <tr>
+                        <td data-label="ID">{{ mod.id }}</td>
+                        <td data-label="Código">{{ mod.codigo_modif }}</td>
+                        <td data-label="Nombre">{{ mod.nombre }}</td>
+                        <td data-label="Descripción">{{ mod.descripcion | truncate(80) if mod.descripcion else '-' }}</td>
+                        <td data-label="Activa">
+                            {% if mod.activo %}
+                                <span class="badge badge--success">Sí</span> {# Usamos badge--success #}
+                            {% else %}
+                                <span class="badge badge--danger">No</span> {# Usamos badge--danger #}
+                            {% endif %}
+                        </td>
+                        <td data-label="Acciones" class="actions-cell">
+                            {# Botón Editar #}
+                            <a href="{{ url_for('productos.editar_modificacion', modificacion_id=mod.id) }}" class="btn btn--warning btn--small" title="Editar">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit-2"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>
+                                Editar
+                            </a>
+                            {# Botón Eliminar (se implementará con confirmación más adelante) #}
+                            {# <a href="#" class="btn btn--outline-danger btn--small" title="Eliminar"> ... </a> #}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="message message-info" role="alert"> {# Usamos message message-info #}
+            No hay modificaciones para mostrar. Puedes <a href="{{ url_for('productos.crear_modificacion') }}">crear una nueva</a>.
+        </div>
+        {% endif %}
+        {# Paginación futura aquí #}
+    </div>
+</main>
+{% endblock %}

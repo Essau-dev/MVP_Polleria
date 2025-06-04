@@ -3,35 +3,45 @@ from flask_login import login_user, logout_user, current_user, login_required
 from app import db
 from app.auth import bp
 from app.auth.forms import LoginForm
-from app.models import Usuario
-from datetime import datetime # Para actualizar ultimo_login
+from app.models import Usuario # Mantener la importación si se usa el tipo Usuario directamente
+# from datetime import datetime # Ya no es necesario importar datetime aquí
 from urllib.parse import urlsplit # Para el next_page
+from app.auth import services # Importar el módulo de servicios
 
 @bp.route('/login', methods=['GET', 'POST'])
 def login():
+    # Si el usuario ya está autenticado, redirigir a la página principal o dashboard
     if current_user.is_authenticated:
-        return redirect(url_for('index')) # O a un dashboard si ya está logueado
+        return redirect(url_for('index')) # O url_for('dashboard')
 
     form = LoginForm()
     if form.validate_on_submit():
-        user = Usuario.query.filter_by(username=form.username.data).first()
+        # Usar la función de servicio para obtener el usuario
+        user = services.obtener_usuario_por_username(form.username.data)
+
+        # Verificar si el usuario existe y la contraseña es correcta
         if user is None or not user.check_password(form.password.data):
-            flash('Usuario o contraseña inválidos.', 'danger')
+            flash('Nombre de usuario o contraseña inválidos.', 'danger')
             return redirect(url_for('auth.login'))
 
-        if not user.activo:
-            flash('Esta cuenta de usuario ha sido desactivada.', 'warning')
-            return redirect(url_for('auth.login'))
-
+        # Si la autenticación es exitosa
         login_user(user, remember=form.remember_me.data)
-        user.ultimo_login = datetime.utcnow() # Actualizar fecha de último login
-        db.session.commit()
-        flash(f'Bienvenido de nuevo, {user.nombre_completo}!', 'success')
 
+        # Actualizar la fecha del último login usando el servicio
+        try:
+            services.actualizar_ultimo_login(user)
+            db.session.commit() # Confirmar la transacción
+        except Exception as e:
+            db.session.rollback()
+            print(f"Error al actualizar ultimo_login para {user.username}: {e}")
+            # Considera si quieres mostrar un flash message aquí o solo loguear el error
+
+        # Redirigir a la página 'next' si existe, de lo contrario a la página principal
         next_page = request.args.get('next')
-        # Protección contra Open Redirect: asegurarse que next_page sea una ruta relativa
         if not next_page or urlsplit(next_page).netloc != '':
-            next_page = url_for('index') # Redirigir a la página principal o a un dashboard
+            next_page = url_for('index') # O url_for('dashboard')
+
+        flash(f'¡Bienvenido, {user.nombre_completo}!', 'success')
         return redirect(next_page)
 
     return render_template('auth/login.html', title='Iniciar Sesión', form=form)

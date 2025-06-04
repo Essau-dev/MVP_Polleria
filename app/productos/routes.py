@@ -2,21 +2,24 @@ from flask import render_template, flash, redirect, url_for, request, abort
 from flask_login import login_required, current_user
 from app import db
 from app.productos import bp
-from app.models import Producto, Subproducto, Modificacion, Precio # Importar Subproducto, Modificacion, Precio
-from app.productos.forms import ProductoForm # Importar el formulario
+from app.models import Producto, Subproducto, Modificacion, Precio # Importar modelos si aún se necesitan para tipos o relaciones directas
+from app.productos.forms import ProductoForm, SubproductoForm, ModificacionForm # Importar los formularios
+from app.productos import services # Importar el módulo de servicios
 
 # --- Rutas para Productos Principales ---
 
-# Ruta para LISTAR productos (ya existente)
+# Ruta para LISTAR productos
 @bp.route('/')
 @login_required
 def listar_productos():
     if current_user.rol != 'ADMINISTRADOR':
         flash('No tienes permiso para acceder a esta sección.', 'danger')
         return redirect(url_for('index'))
-    productos_list = Producto.query.order_by(Producto.nombre.asc()).all()
-    # Cambiar 'productos/listar_productos.html' a 'listar_productos.html'
-    return render_template('listar_productos.html',
+
+    # Usar la función de servicio para obtener los productos
+    productos_list = services.obtener_todos_los_productos()
+
+    return render_template('productos/listar_productos.html',
                            productos=productos_list,
                            title="Gestión de Productos")
 
@@ -30,23 +33,17 @@ def crear_producto():
 
     form = ProductoForm() # No pasamos original_producto_id porque es nuevo
     if form.validate_on_submit():
-        nuevo_producto = Producto(
-            id=form.id.data.upper(), # Guardar ID en mayúsculas por consistencia
-            nombre=form.nombre.data,
-            descripcion=form.descripcion.data,
-            categoria=form.categoria.data,
-            activo=form.activo.data
-        )
-        db.session.add(nuevo_producto)
         try:
-            db.session.commit()
-            flash(f'Producto "{nuevo_producto.nombre}" creado exitosamente.', 'success')
+            # Usar la función de servicio para crear el producto
+            services.crear_producto(form.data)
+            db.session.commit() # Confirmar la transacción
+            flash(f'Producto "{form.nombre.data}" creado exitosamente.', 'success')
             return redirect(url_for('productos.listar_productos'))
         except Exception as e:
-            db.session.rollback()
+            db.session.rollback() # Revertir la transacción en caso de error
             flash(f'Error al crear el producto: {e}', 'danger')
 
-    return render_template('crear_editar_producto.html', # Usar la plantilla dentro del template_folder del Blueprint
+    return render_template('productos/crear_editar_producto.html',
                            title="Crear Nuevo Producto",
                            form=form,
                            es_editar=False)
@@ -59,7 +56,8 @@ def editar_producto(producto_id):
         flash('No tienes permiso para editar productos.', 'danger')
         return redirect(url_for('productos.listar_productos'))
 
-    producto_a_editar = db.session.get(Producto, producto_id) # Usar db.session.get
+    # Usar la función de servicio para obtener el producto
+    producto_a_editar = services.obtener_producto_por_id(producto_id)
     if not producto_a_editar:
         flash(f'Producto con ID "{producto_id}" no encontrado.', 'warning')
         return redirect(url_for('productos.listar_productos'))
@@ -69,35 +67,18 @@ def editar_producto(producto_id):
     form = ProductoForm(original_producto_id=producto_a_editar.id, obj=producto_a_editar)
 
     if form.validate_on_submit():
-        # El campo ID no se edita directamente en este formulario para evitar cambiar la PK fácilmente.
-        # Si se quisiera permitir editar el ID, se necesitaría una lógica más compleja
-        # para manejar las relaciones y asegurar la integridad.
-        # Por ahora, asumimos que el ID (código) no cambia una vez creado,
-        # o si cambia, la validación del form ya se encargó de la unicidad.
-        # Si el campo ID del formulario es diferente al producto_a_editar.id original Y ES EL MISMO CAMPO EN EL FORM,
-        # la validación de unicidad en el form ya lo habrá chequeado.
-        # Si el ID *NO* debe ser editable en el formulario, deshabilítalo en la plantilla o no lo incluyas para edición.
-
-        # Actualizar los campos del producto con los datos del formulario
-        # form.populate_obj(producto_a_editar) # Alternativa a la asignación manual
-        producto_a_editar.nombre = form.nombre.data
-        producto_a_editar.descripcion = form.descripcion.data
-        producto_a_editar.categoria = form.categoria.data
-        producto_a_editar.activo = form.activo.data
-        # Si permites que el ID del producto se modifique a través del formulario:
-        # producto_a_editar.id = form.id.data.upper() # ¡Cuidado con cambiar PKs!
-
         try:
-            db.session.commit()
+            # Usar la función de servicio para actualizar el producto
+            services.actualizar_producto(producto_a_editar, form.data)
+            db.session.commit() # Confirmar la transacción
             flash(f'Producto "{producto_a_editar.nombre}" actualizado exitosamente.', 'success')
             return redirect(url_for('productos.listar_productos'))
         except Exception as e:
-            db.session.rollback()
+            db.session.rollback() # Revertir la transacción en caso de error
             flash(f'Error al actualizar el producto: {e}', 'danger')
 
     # Para GET, el formulario se poblará con obj=producto_a_editar
-    # Si el campo ID se muestra en el form de edición, se mostrará el actual.
-    return render_template('crear_editar_producto.html', # Usar la plantilla dentro del template_folder del Blueprint
+    return render_template('productos/crear_editar_producto.html',
                            title=f"Editar Producto: {producto_a_editar.nombre}",
                            form=form,
                            producto=producto_a_editar, # Pasamos el producto para referencia en la plantilla
@@ -111,30 +92,164 @@ def ver_producto(producto_id):
         flash('No tienes permiso para ver los detalles de este producto.', 'danger')
         return redirect(url_for('productos.listar_productos'))
 
-    producto = db.session.get(Producto, producto_id.upper())
+    # Usar la función de servicio para obtener el producto
+    producto = services.obtener_producto_por_id(producto_id)
     if not producto:
         flash(f'Producto con ID "{producto_id}" no encontrado.', 'warning')
         return redirect(url_for('productos.listar_productos'))
 
-    # Aquí, más adelante, también consultaremos subproductos, modificaciones aplicables, y precios.
-    # Por ahora, nos enfocamos en los datos directos del producto y lo que ya tenemos relacionado.
+    # Usar funciones de servicio para obtener las relaciones
+    modificaciones_directas = services.obtener_modificaciones_para_producto(producto) # Asumiendo que agregamos esta función al servicio
+    subproductos_asociados = services.obtener_subproductos_para_producto(producto)
+    precios_del_producto = services.obtener_precios_para_producto(producto)
 
-    # Para mostrar las modificaciones directas que ya relacionamos:
-    # Si la relación es lazy='dynamic', necesitas .all()
-    modificaciones_directas = producto.modificaciones_directas.all()
-
-    # Para mostrar los subproductos directos:
-    # Si la relación es lazy='dynamic', necesitas .all()
-    subproductos_asociados = producto.subproductos.order_by(Subproducto.nombre.asc()).all()
-
-    # Para mostrar los precios directos del producto:
-    # Si la relación es lazy='dynamic', necesitas .all()
-    precios_del_producto = producto.precios.order_by(Precio.tipo_cliente.asc(), Precio.cantidad_minima_kg.asc()).all()
-
-
-    return render_template('ver_producto.html', # Usar la plantilla dentro del template_folder del Blueprint
+    return render_template('productos/ver_producto.html',
                            title=f"Detalle: {producto.nombre}",
                            producto=producto,
                            modificaciones=modificaciones_directas,
                            subproductos=subproductos_asociados,
                            precios=precios_del_producto)
+
+# --- Rutas para Subproductos ---
+
+@bp.route('/<string:producto_padre_id>/subproducto/crear', methods=['GET', 'POST'])
+@login_required
+def crear_subproducto(producto_padre_id):
+    if current_user.rol != 'ADMINISTRADOR':
+        flash('No tienes permiso para crear subproductos.', 'danger')
+        return redirect(url_for('productos.listar_productos'))
+
+    # Usar la función de servicio para obtener el producto padre
+    producto_padre = services.obtener_producto_por_id(producto_padre_id)
+    if not producto_padre:
+        flash(f'Producto padre con ID "{producto_padre_id}" no encontrado.', 'warning')
+        return redirect(url_for('productos.listar_productos'))
+
+    form = SubproductoForm() # No pasamos original_codigo_subprod porque es nuevo
+    if form.validate_on_submit():
+        try:
+            # Usar la función de servicio para crear el subproducto
+            services.crear_subproducto(producto_padre, form.data)
+            db.session.commit() # Confirmar la transacción
+            flash(f'Subproducto "{form.nombre.data}" creado y asociado a "{producto_padre.nombre}".', 'success')
+            return redirect(url_for('productos.ver_producto', producto_id=producto_padre.id))
+        except Exception as e:
+            db.session.rollback() # Revertir la transacción en caso de error
+            flash(f'Error al crear el subproducto: {str(e)}', 'danger')
+
+    return render_template('productos/crear_editar_subproducto.html',
+                           title=f"Crear Subproducto para: {producto_padre.nombre}",
+                           form=form,
+                           producto_padre=producto_padre,
+                           es_editar=False)
+
+@bp.route('/subproducto/editar/<int:subproducto_id>', methods=['GET', 'POST'])
+@login_required
+def editar_subproducto(subproducto_id):
+    if current_user.rol != 'ADMINISTRADOR':
+        flash('No tienes permiso para editar subproductos.', 'danger')
+        return redirect(url_for('productos.listar_productos'))
+
+    # Usar la función de servicio para obtener el subproducto
+    subproducto_a_editar = services.obtener_subproducto_por_id(subproducto_id)
+    if not subproducto_a_editar:
+        flash(f'Subproducto con ID "{subproducto_id}" no encontrado.', 'warning')
+        return redirect(url_for('productos.listar_productos')) # O a la vista del producto padre si se tiene
+
+    producto_padre = subproducto_a_editar.producto_padre # Acceder al producto padre (la relación ya está cargada)
+
+    form = SubproductoForm(original_codigo_subprod=subproducto_a_editar.codigo_subprod, obj=subproducto_a_editar)
+
+    if form.validate_on_submit():
+        try:
+            # Usar la función de servicio para actualizar el subproducto
+            services.actualizar_subproducto(subproducto_a_editar, form.data)
+            db.session.commit() # Confirmar la transacción
+            flash(f'Subproducto "{subproducto_a_editar.nombre}" actualizado.', 'success')
+            return redirect(url_for('productos.ver_producto', producto_id=producto_padre.id))
+        except Exception as e:
+            db.session.rollback() # Revertir la transacción en caso de error
+            flash(f'Error al actualizar el subproducto: {str(e)}', 'danger')
+
+    return render_template('productos/crear_editar_subproducto.html',
+                           title=f"Editar Subproducto: {subproducto_a_editar.nombre}",
+                           form=form,
+                           producto_padre=producto_padre, # Para mostrar contexto
+                           subproducto=subproducto_a_editar, # Para referencia en la plantilla si es necesario
+                           es_editar=True)
+
+# --- Rutas para Modificaciones ---
+
+@bp.route('/modificaciones')
+@login_required
+def listar_modificaciones():
+    if current_user.rol != 'ADMINISTRADOR':
+        flash('No tienes permiso para acceder a esta sección.', 'danger')
+        return redirect(url_for('index')) # O a productos.listar_productos
+
+    # Usar la función de servicio para obtener las modificaciones
+    modificaciones_list = services.obtener_todas_las_modificaciones()
+
+    return render_template('productos/listar_modificaciones.html',
+                           modificaciones=modificaciones_list,
+                           title="Gestión de Modificaciones")
+
+@bp.route('/modificacion/crear', methods=['GET', 'POST'])
+@login_required
+def crear_modificacion():
+    if current_user.rol != 'ADMINISTRADOR':
+        flash('No tienes permiso para crear modificaciones.', 'danger')
+        return redirect(url_for('productos.listar_modificaciones'))
+
+    form = ModificacionForm()
+    if form.validate_on_submit():
+        try:
+            # Usar la función de servicio para crear la modificación
+            services.crear_modificacion(form.data)
+            db.session.commit() # Confirmar la transacción
+            flash(f'Modificación "{form.nombre.data}" creada exitosamente.', 'success')
+            return redirect(url_for('productos.listar_modificaciones'))
+        except Exception as e:
+            db.session.rollback() # Revertir la transacción en caso de error
+            flash(f'Error al crear la modificación: {str(e)}', 'danger')
+
+    return render_template('productos/crear_editar_modificaciones.html',
+                           title="Crear Nueva Modificación",
+                           form=form,
+                           es_editar=False)
+
+@bp.route('/modificacion/editar/<int:modificacion_id>', methods=['GET', 'POST'])
+@login_required
+def editar_modificacion(modificacion_id):
+    if current_user.rol != 'ADMINISTRADOR':
+        flash('No tienes permiso para editar modificaciones.', 'danger')
+        return redirect(url_for('productos.listar_modificaciones'))
+
+    # Usar la función de servicio para obtener la modificación
+    modificacion_a_editar = services.obtener_modificacion_por_id(modificacion_id)
+    if not modificacion_a_editar:
+        flash(f'Modificación con ID "{modificacion_id}" no encontrada.', 'warning')
+        return redirect(url_for('productos.listar_modificaciones'))
+
+    form = ModificacionForm(original_codigo_modif=modificacion_a_editar.codigo_modif, obj=modificacion_a_editar)
+
+    if form.validate_on_submit():
+        try:
+            # Usar la función de servicio para actualizar la modificación
+            services.actualizar_modificacion(modificacion_a_editar, form.data)
+            db.session.commit() # Confirmar la transacción
+            flash(f'Modificación "{modificacion_a_editar.nombre}" actualizada exitosamente.', 'success')
+            return redirect(url_for('productos.listar_modificaciones'))
+        except Exception as e:
+            db.session.rollback() # Revertir la transacción en caso de error
+            flash(f'Error al actualizar la modificación: {str(e)}', 'danger')
+
+    return render_template('productos/crear_editar_modificaciones.html',
+                           title=f"Editar Modificación: {modificacion_a_editar.nombre}",
+                           form=form,
+                           es_editar=True)
+
+# Nota: Las rutas para eliminar productos, subproductos o modificaciones
+# seguirían un patrón similar, llamando a funciones de servicio como
+# services.eliminar_producto(producto_id), services.eliminar_subproducto(subproducto_id),
+# services.eliminar_modificacion(modificacion_id) y manejando el commit/rollback aquí.

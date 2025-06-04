@@ -4,34 +4,40 @@
 
 {% block content %}
 <main> {# Envuelve tu contenido principal con la etiqueta <main> para aplicar estilos globales #}
-    <div class="container mt-4">
-        {# Bloque para mostrar mensajes flash #}
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                <div class="message message-{{ category }}">
-                    {{ message }}
-                    <button type="button" class="close-message-btn">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                    </button>
-                </div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
+    {# Reemplazamos .container .mt-4 por .page-content #}
+    <div class="page-content">
+        {# Bloque para mostrar mensajes flash (Incluido a través de base.html) #}
+        {# {% include 'shared/_flash_messages.html' %} #} {# Este include ya no es necesario aquí si está en base.html #}
 
-        {% if current_user.is_authenticated %}
-            <h1>Bienvenido a Pollería Montiel MVP, {{ current_user.nombre_completo }}!</h1>
-            <p>Has iniciado sesión como: {{ current_user.rol }}</p>
-            {# Aplicamos clases de botón a los enlaces #}
-            <p><a href="{{ url_for('dashboard') }}" class="btn btn--primary">Ir al Panel de Control</a></p>
-            {% if current_user.rol == 'ADMINISTRADOR' %}
-            <p><a href="{{ url_for('productos.listar_productos') }}" class="btn btn--info">Gestionar Productos</a></p>
-            {% endif %}
-            <p><a href="{{ url_for('auth.logout') }}" class="btn btn--danger">Cerrar Sesión</a></p>
-        {% else %}
-            <h1>Bienvenido a Pollería Montiel MVP!</h1>
-            <p><a href="{{ url_for('auth.login') }}" class="btn btn--primary">Iniciar Sesión</a></p>
-        {% endif %}
+        <div class="custom-card"> {# Usamos la clase custom-card para el contenedor principal #}
+            <div class="card-header"> {# Usamos card-header para el título #}
+                {% if current_user.is_authenticated %}
+                    <h3 class="text-center">Bienvenido(a) {{ current_user.nombre_completo }}!</h3>
+                    <h4 class="text">Rol: <strong>{{ current_user.rol }}</h4>
+                {% else %}
+                    <h3 class="text-center">Bienvenido(a) a Pollería Montiel!</h3>
+                    
+                {% endif %}
+            </div>
+            <div class="card-body text-center"> {# Usamos card-body para el contenido y centramos el texto #}
+                {% if current_user.is_authenticated %}
+                    <p style="margin-bottom: var(--espacio-s);"></strong></p>
+                    {# Aplicamos clases de botón a los enlaces #}
+                    <div class="form-actions justify-content-center"> {# Usamos .form-actions para agrupar los botones y centramos #}
+                        <a href="{{ url_for('dashboard') }}" class="btn btn--primary">Ir al Panel de Control</a>
+                        {% if current_user.rol == 'ADMINISTRADOR' %}
+                        <a href="{{ url_for('productos.listar_productos') }}" class="btn btn--info">Gestionar Productos</a>
+                        {% endif %}
+                        <a href="{{ url_for('auth.logout') }}" class="btn btn--danger">Cerrar Sesión</a>
+                    </div>
+                {% else %}
+                    <p>Por favor, inicia sesión para acceder a las funcionalidades.</p>
+                    <div class="form-actions justify-content-center"> {# Usamos .form-actions para agrupar los botones y centramos #}
+                        <a href="{{ url_for('auth.login') }}" class="btn btn--primary">Iniciar Sesión</a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
     </div>
 </main>
 {% endblock %}
